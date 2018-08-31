@@ -55,7 +55,9 @@ Ciphertext GenAtA(Ciphertext encZData, Scheme& scheme, ZZX& poly, ZZX& poly2, lo
 		
 /////////////
 		for(int i=1; i<bBits; i++){
-		Ciphertext encIPvec = scheme.leftRotateFast(encZData, batch*i);
+				cout << i  << "AtA row gen" << endl;
+
+		Ciphertext encIPvec = scheme.leftRotate(encZData, (batch*i));
 		scheme.multByPolyAndEqual(encIPvec, poly2, pBits);
 		for (long l = 0; l < bBits; ++l) {
 			Ciphertext tmp = scheme.rightRotateByPo2(encIPvec, l+bBits);//parameter check
@@ -64,12 +66,14 @@ Ciphertext GenAtA(Ciphertext encZData, Scheme& scheme, ZZX& poly, ZZX& poly2, lo
 
 		scheme.multAndEqual(encIPvec, encZData); // xy * w
 		for (long l = 0; l < bBits; ++l) {
+
 			Ciphertext rot = scheme.leftRotateByPo2(encIPvec, bBits+l);//paratmeter check
 			scheme.addAndEqual(encIPvec, rot);
 		}
 	
 	scheme.reScaleByAndEqual(encIPvec, wBits);
-	
+
+				cout << i  << "AtA row gen ff" << endl;
 
 	scheme.multByPolyAndEqual(encIPvec, poly2, pBits);
 	encIPvec = scheme.rightRotate(encIPvec, batch*i);
@@ -259,9 +263,9 @@ double** zDataFromFile(string& path, long& factorDim, long& sampleDim, bool isfi
 }
 
 /*
-Ciphertext makeMatrixA(Ciphertext enczData, long bBits, ZZX& poly, long pBits){
+Ciphertext makeMatrixA(Ciphertext enczData, Scheme& scheme, long bBits, ZZX& poly, long pBits){
 		Ciphertext Row;
-		Row = scheme.rightRotate(encZData, 1);
+		Row = scheme.rightRotate(enczData, 1);
 		//첫 슬롯에 1 더하기
 		for (long l = 0; l < bBits; ++l) {
 		Ciphertext tmp = scheme.rightRotateByPo2(Row, l+bBits);//parameter check
@@ -270,7 +274,7 @@ Ciphertext makeMatrixA(Ciphertext enczData, long bBits, ZZX& poly, long pBits){
 
 		Ciphertext Column;
 		Ciphertext tmp;
-		tmp = scheme.rightRotate(encZData, 1);
+		tmp = scheme.rightRotate(enczData, 1);
 		for (long l = 1; l < (1<<bBits); ++l) {
 		tmp = scheme.rightRotateByPo2(tmp, bBits);
 		tmp = scheme.leftRotate(tmp, 1);
@@ -279,21 +283,15 @@ Ciphertext makeMatrixA(Ciphertext enczData, long bBits, ZZX& poly, long pBits){
 
 		scheme.multByPolyAndEqual(Column, poly, pBits); 
 		for (long l = 0; l < bBits; ++l) {
-		Ciphertext tmp = scheme.rightRotateByPo2(encIPvec, l);
-		scheme.addAndEqual(encIPvec, tmp);
+		Ciphertext tmp = scheme.rightRotateByPo2(Column, l);
+		scheme.addAndEqual(Column, tmp);
 	}
 	
 
 
 ///////////////
 		scheme.multAndEqual(encIPvec, encWData); // xy * w
-		for (long l = 0; l < bBits; ++l) {
-			Ciphertext rot = scheme.leftRotateByPo2(encIPvec, bBits+l);//paratmeter check
-			scheme.addAndEqual(encIPvec, rot);
-		}
-	
-	
-
+		
 	scheme.reScaleByAndEqual(encIPvec, wBits);
 	
 	scheme.multByPolyAndEqual(encIPvec, poly, pBits); //Vert poly
@@ -306,14 +304,14 @@ Ciphertext makeMatrixA(Ciphertext enczData, long bBits, ZZX& poly, long pBits){
 
 }
 
-
+*/
 //Ciphertext makeMatrix(Ciphertext enczData, long& factorDim, long& sampleDim, bool isfirst) {
 	
 	//enczData = 
 //}
 
 
-*/
+
 
 int main(int argc, char **argv) {
 
