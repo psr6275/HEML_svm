@@ -443,16 +443,9 @@ double** zData;
  		Ciphertext encIP = encHorizonVecProduct(encZData, encWData, scheme, poly,  bBits, wBits, pBits) ;
 
 		encWData = encVerticalVecProduct(encZData, encIP, scheme, poly2, bBits, wBits, pBits) ;
-		 				cout << " !!! check !!! " << endl;
+			scheme.addAndEqual(encWData, AbH);
 
 		complex<double>* msgg = scheme.decrypt(secretKey, encWData);
- 				cout << " !!! check !!! " << endl;
-
-
-		double* vData = rawmult(zData, wtData, dim);
-		double* v2Data = rawmult(zData, vData, dim);
- 		cout << "result = " << v2Data[0] << v2Data[1]  << endl;
- 		cout << "result = " << msgg[0] << msgg[1]  << endl;
 
 
 
@@ -460,12 +453,13 @@ double** zData;
 
 		////Vertical Only
 	/*	Ciphertext encIP = encVerticalVecProduct(AtA, encWData, scheme, poly2, bBits, wBits, pBits) ;
+		scheme.addAndEqual(encIP, abH);
+
+
 		complex<double>* msgg = scheme.decrypt(secretKey, encIP);
 
 
-		double* vData = rawmult(zData, wtData, dim);
- 		cout << "result = " << vData[0] << vData[1]  << endl;
- 		cout << "result = " << msgg[0] << msgg[1]  << endl;
+	
 */
 
 
