@@ -54,7 +54,7 @@ Ciphertext GenAtA(Ciphertext encZData, Scheme& scheme, ZZX& poly, ZZX& poly2, lo
 	scheme.multByPolyAndEqual(AtA, poly2, pBits);
 		
 /////////////
-		for(int i=1; i<bBits; i++){
+		for(int i=1; i<batch; i++){
 				cout << i  << "AtA row gen" << endl;
 
 		Ciphertext encIPvec = scheme.leftRotate(encZData, (batch*i));
@@ -87,7 +87,8 @@ Ciphertext GenAtA(Ciphertext encZData, Scheme& scheme, ZZX& poly, ZZX& poly2, lo
 
 Ciphertext GenAbHorzon(Ciphertext encZData, Scheme& scheme, ZZX& poly, long bBits, long wBits, long pBits, long slots) {
 	
-	Ciphertext encIPvec;
+	Ciphertext encIPvec=encZData;
+				cout << "AbH" << endl;
 
 	complex<double>* pvals = new complex<double>[slots];
 		for (long j = 0; j < slots; j++) {   //parameter check
@@ -95,6 +96,7 @@ Ciphertext GenAbHorzon(Ciphertext encZData, Scheme& scheme, ZZX& poly, long bBit
 	}
 	ZZX ptmp = scheme.context.encode(pvals, slots, pBits);
 	delete[] pvals;
+
 	ptmp = ptmp - poly;  
 	scheme.multByPolyAndEqual(encIPvec, ptmp, pBits);
 		for (long l = 0; l < bBits; ++l) {
@@ -114,15 +116,17 @@ Ciphertext GenAbHorzon(Ciphertext encZData, Scheme& scheme, ZZX& poly, long bBit
 
 Ciphertext GenAbVertical(Ciphertext encZData, Scheme& scheme, ZZX& poly, long bBits, long wBits, long pBits, long slots) {
 		
-	Ciphertext encIPvec;
+	Ciphertext encIPvec=encZData;
 
 		complex<double>* pvals = new complex<double>[slots];
 		for (long j = (1<<bBits); j < slots; j++) {   //parameter check
 		pvals[j].real(1.0);
 	}
 	ZZX ptmp = scheme.context.encode(pvals, slots, pBits);
+
 	delete[] pvals;
 	scheme.multByPolyAndEqual(encIPvec, ptmp, pBits);
+
 	for (long l = 0; l < bBits; ++l) {
 			Ciphertext rot = scheme.leftRotateByPo2(encIPvec, bBits+l);//paratmeter check
 			scheme.addAndEqual(encIPvec, rot);
@@ -262,8 +266,8 @@ double** zDataFromFile(string& path, long& factorDim, long& sampleDim, bool isfi
 	return zData;
 }
 
-/*
-Ciphertext makeMatrixA(Ciphertext enczData, Scheme& scheme, long bBits, ZZX& poly, long pBits){
+
+Ciphertext makeMatrixA(Ciphertext enczData, Scheme& scheme, long bBits, ZZX& poly, long pBits, long wBits){
 		Ciphertext Row;
 		Row = scheme.rightRotate(enczData, 1);
 		//첫 슬롯에 1 더하기
@@ -290,21 +294,13 @@ Ciphertext makeMatrixA(Ciphertext enczData, Scheme& scheme, long bBits, ZZX& pol
 
 
 ///////////////
-		scheme.multAndEqual(encIPvec, encWData); // xy * w
-		
-	scheme.reScaleByAndEqual(encIPvec, wBits);
-	
-	scheme.multByPolyAndEqual(encIPvec, poly, pBits); //Vert poly
-	for (long l = 0; l < bBits; ++l) {
-		Ciphertext tmp = scheme.rightRotateByPo2(encIPvec, l+bBits);//parameter check
-		scheme.addAndEqual(encIPvec, tmp);
-	}
-	return encIPvec;
+
+	return Column;
 
 
 }
 
-*/
+
 //Ciphertext makeMatrix(Ciphertext enczData, long& factorDim, long& sampleDim, bool isfirst) {
 	
 	//enczData = 
@@ -315,7 +311,7 @@ Ciphertext makeMatrixA(Ciphertext enczData, Scheme& scheme, long bBits, ZZX& pol
 
 int main(int argc, char **argv) {
 
-			long dim=16;
+			const long dim=4;
 	/*        long sampleDim = dim, factorDim = dim;
 
 	        	bool isYfirst = atoi(argv[2]);
@@ -367,7 +363,7 @@ double** zData;
 		
 
 
-	long numIter = 7;
+	long numIter = 1;
 	long kdeg = 3;
 	double gammaUp = 1;
 	double gammaDown = -1;
@@ -392,7 +388,7 @@ double** zData;
 	long sBits = sdimBits + bBits;
 	long slots =  1 << sBits;
 
-	cout << "batch = " << batch << ", slots = " << slots  << endl;
+	cout << dim << "batch = " << batch << ", slots = " << slots  << endl;
 
 	cout << "HEAAN PARAMETER logQ: " << logQ << endl;
 	cout << "HEAAN PARAMETER logN: " << logN << endl;
@@ -417,7 +413,7 @@ double** zData;
 
 	Ciphertext encZData ;
 	Ciphertext encWData ;
-	
+
 
 	timeutils.start("Encrypting Data...");
 	encZData = scheme.encrypt(zeData, slots, wBits, logQ);
@@ -426,9 +422,10 @@ double** zData;
 	timeutils.stop("Data encryption");
 
 	timeutils.start("Precomputing");
-	Ciphertext AtA= GenAtA(encZData, scheme, poly, poly2, bBits, wBits, pBits, batch, slots) ;
+		Ciphertext AbV= GenAbVertical(encZData, scheme, poly2, bBits, wBits, pBits, slots) ; 
+
 	Ciphertext AbH= GenAbHorzon(encZData, scheme, poly, bBits, wBits, pBits, slots) ;
-	Ciphertext AbV= GenAbVertical(encZData, scheme, poly2, bBits, wBits, pBits, slots) ; 
+	Ciphertext AtA= GenAtA(encZData, scheme, poly, poly2, bBits, wBits, pBits, batch, slots) ;
 
 	timeutils.stop("Precomputing Done");
 
@@ -440,49 +437,36 @@ double** zData;
 
 
 
-/*//////stepwise
-		Ciphertext encIP = encHorizonVecProduct(encZData, encWData, scheme, poly,  bBits, wBits, pBits) ;
-		complex<double>* msgg = scheme.decrypt(secretKey, encIP);
-		double* vData = rawmult(zData, wtData, dim);
-		cout << "result = " << vData[0] << vData[1]  << endl;
- 		cout << "result = " << msgg[0] << msgg[dim]  << endl;
-
-
-		Ciphertext encIP2 = encVerticalVecProduct(encZData, encIP, scheme, poly2,  bBits, wBits, pBits) ;
-		msgg = scheme.decrypt(secretKey, encIP2);
-
-
-		//double* vData = rawmult(zData, wtData, dim);
-		double* v2Data = rawmult(zData, v2Data, dim);
- 		cout << "result = " << v2Data[0] << v2Data[1]  << endl;
- 		cout << "result = " << msgg[0] << msgg[1]  << endl;
 
 //////////one-shot two step
 
-
  		Ciphertext encIP = encHorizonVecProduct(encZData, encWData, scheme, poly,  bBits, wBits, pBits) ;
+
 		encWData = encVerticalVecProduct(encZData, encIP, scheme, poly2, bBits, wBits, pBits) ;
+		 				cout << " !!! check !!! " << endl;
+
 		complex<double>* msgg = scheme.decrypt(secretKey, encWData);
+ 				cout << " !!! check !!! " << endl;
 
 
 		double* vData = rawmult(zData, wtData, dim);
-		double* v2Data = rawmult(zData, v2Data, dim);
+		double* v2Data = rawmult(zData, vData, dim);
  		cout << "result = " << v2Data[0] << v2Data[1]  << endl;
  		cout << "result = " << msgg[0] << msgg[1]  << endl;
 
 
-*/
+
 //////////////////////
 
 		////Vertical Only
-		Ciphertext encIP = encVerticalVecProduct(encZData, encWData, scheme, poly2, bBits, wBits, pBits) ;
+	/*	Ciphertext encIP = encVerticalVecProduct(AtA, encWData, scheme, poly2, bBits, wBits, pBits) ;
 		complex<double>* msgg = scheme.decrypt(secretKey, encIP);
 
 
 		double* vData = rawmult(zData, wtData, dim);
  		cout << "result = " << vData[0] << vData[1]  << endl;
  		cout << "result = " << msgg[0] << msgg[1]  << endl;
-
+*/
 
 
 		timeutils.stop("mult iter end");
