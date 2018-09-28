@@ -15,8 +15,9 @@
 #include <cmath>
 
 
-#include "CipherGD.h"
-#include "TestGD.h"
+//#include "CipherGD.h"
+//#include "TestGD.h"
+#include "CipherSVM.h"
 
 #include "GD.h"
 #include "Common.h"
@@ -33,8 +34,37 @@
 using namespace std;
 using namespace NTL;
 
+/// start to define the functions for CipherSVM
+
+void CipherSVM::encZData(Ciphertext* encZData, double** zData, long slots, long factorDim, long sampleDim, long batch, long cnum, long wBits, long logQ) {
+	complex<double>* pzData = new complex<double>[slots];
+	/* it should be implemented to deal with large-scale A matrix, 
+	but now we assume that A is not so big.*/
+	for (long i = 0; i < cnum - 1; ++i) {
+		for (long j = 0; j < sampleDim; ++j) {
+			for (long l = 0; l < batch; ++l) {
+				pzData[batch * j + l].real(zData[j][batch * i + l]);
+			}
+		}
+		encZData[i] = scheme.encrypt(pzData, slots, wBits, logQ);
+	}
+
+	long rest = factorDim - batch * (cnum - 1);
+	for (long j = 0; j < sampleDim; ++j) {
+		for (long l = 0; l < rest; ++l) {
+			pzData[batch * j + l].real(zData[j][batch * (cnum - 1) + l]);
+		}
+		for (long l = rest; l < batch; ++l) {
+			pzData[batch * j + l] = 0;
+		}
+	}
+	encZData[cnum - 1] = scheme.encrypt(pzData, slots, wBits, logQ);
+
+	delete[] pzData;
+}
+
 ///
-Ciphertext GenAtA(Ciphertext encZData, Scheme& scheme, ZZX& poly, ZZX& poly2, long bBits, long wBits, long pBits, long batch, long slots) {
+Ciphertext CipherSVM::GenAtA(Ciphertext encZData, Scheme& scheme, ZZX& poly, ZZX& poly2, long bBits, long wBits, long pBits, long batch, long slots) {
 	
 	Ciphertext AtA = scheme.multByPoly(encZData, poly2, pBits);
 		for (long l = 0; l < bBits; ++l) {
@@ -85,7 +115,7 @@ Ciphertext GenAtA(Ciphertext encZData, Scheme& scheme, ZZX& poly, ZZX& poly2, lo
 }
 
 
-Ciphertext GenAbHorzon(Ciphertext encZData, Scheme& scheme, ZZX& poly, long bBits, long wBits, long pBits, long slots) {
+Ciphertext CipherSVM::GenAbHorzon(Ciphertext encZData, Scheme& scheme, ZZX& poly, long bBits, long wBits, long pBits, long slots) {
 	
 	Ciphertext encIPvec=encZData;
 				cout << "AbH" << endl;
@@ -114,7 +144,7 @@ Ciphertext GenAbHorzon(Ciphertext encZData, Scheme& scheme, ZZX& poly, long bBit
 	return encIPvec;
 }
 
-Ciphertext GenAbVertical(Ciphertext encZData, Scheme& scheme, ZZX& poly, long bBits, long wBits, long pBits, long slots) {
+Ciphertext CipherSVM::GenAbVertical(Ciphertext encZData, Scheme& scheme, ZZX& poly, long bBits, long wBits, long pBits, long slots) {
 		
 	Ciphertext encIPvec=encZData;
 
@@ -146,7 +176,7 @@ Ciphertext GenAbVertical(Ciphertext encZData, Scheme& scheme, ZZX& poly, long bB
 //GenAbHor
 
 
-Ciphertext encHorizonVecProduct(Ciphertext encZData, Ciphertext encWData, Scheme& scheme, ZZX& poly, long bBits, long wBits, long pBits) {
+Ciphertext CipherSVM::encHorizonVecProduct(Ciphertext encZData, Ciphertext encWData, Scheme& scheme, ZZX& poly, long bBits, long wBits, long pBits) {
 	Ciphertext encIPvec;
 		encIPvec = scheme.modDownTo(encZData, encWData.logq);
 		scheme.multAndEqual(encIPvec, encWData); // xy * w
@@ -168,7 +198,7 @@ Ciphertext encHorizonVecProduct(Ciphertext encZData, Ciphertext encWData, Scheme
 }
 
 //poly V를 넣어야 한다.
-Ciphertext encVerticalVecProduct(Ciphertext encZData, Ciphertext encWData, Scheme& scheme, ZZX& poly,  long bBits, long wBits, long pBits) {
+Ciphertext CipherSVM::encVerticalVecProduct(Ciphertext encZData, Ciphertext encWData, Scheme& scheme, ZZX& poly,  long bBits, long wBits, long pBits) {
 	Ciphertext encIPvec;
 		encIPvec = scheme.modDownTo(encZData, encWData.logq);
 		scheme.multAndEqual(encIPvec, encWData); // xy * w
@@ -189,8 +219,16 @@ Ciphertext encVerticalVecProduct(Ciphertext encZData, Ciphertext encWData, Schem
 	return encIPvec;
 }
 
-
-ZZX generateAuxPoly2(long slots, long batch, long pBits, Scheme& scheme) {
+ZZX CipherSVM::generateAuxPoly(long slots, long batch, long pBits) {
+	complex<double>* pvals = new complex<double>[slots];
+	for (long j = 0; j < slots; j += batch) {
+		pvals[j].real(1.0);
+	}
+	ZZX msg = scheme.context.encode(pvals, slots, pBits);
+	delete[] pvals;
+	return msg;
+}
+ZZX CipherSVM::generateAuxPoly2(long slots, long batch, long pBits, Scheme& scheme) {
 	complex<double>* pvals = new complex<double>[slots];
 	for (long j = 0; j < batch; j ++) {   //parameter check
 		pvals[j].real(1.0);
@@ -200,7 +238,8 @@ ZZX generateAuxPoly2(long slots, long batch, long pBits, Scheme& scheme) {
 	return msg;
 }
 
-
+//////////////////////
+//////////////////////
 double* rawmult(double** zData, double* wtData, long dim){
 		double* vdata = new double[dim];
 		for(int i=0; i< dim; i++)vdata[i]=0;
