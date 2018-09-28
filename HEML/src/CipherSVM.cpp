@@ -238,6 +238,21 @@ ZZX CipherSVM::generateAuxPoly2(long slots, long batch, long pBits, Scheme& sche
 	return msg;
 }
 
+void CipherSVM::encLGDstep(Ciphertext* encWData, Ciphertext* encGrad, long cnum){
+	NTL_EXEC_RANGE(cnum, first, last);
+	for (long i = first; i < last; ++i) {
+		scheme.modDownToAndEqual(encWData[i], encGrad[i].logq);
+		scheme.subAndEqual(encWData[i], encGrad[i]);
+	}
+	NTL_EXEC_RANGE_END;
+}
+void CipherSVM::encLGDiteration(Ciphertext* encAtAData, Ciphertext* encAb, Ciphertext* encWData, ZZX& poly, long cnum, double gamma, long sBits, long bBits, long wBits, long pBits, long aBits) {
+ 	Ciphertext* encGrad = new Ciphertext[cnum];
+	Ciphertext encIP = encVerticalVecProduct(encAtAData, encWData, scheme, poly2, bBits, wBits, pBits) ;
+	scheme.subAndEqual(encIP,encAb);
+	encLGDstep(encWData, encGrad, cnum);
+	delete[] encGrad;
+}
 //////////////////////
 //////////////////////
 double* rawmult(double** zData, double* wtData, long dim){

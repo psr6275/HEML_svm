@@ -32,7 +32,9 @@ public:
         Ciphertext encHorizonVecProduct(Ciphertext encZData, Ciphertext encWData, Scheme& scheme, ZZX& poly, long bBits, long wBits, long pBits); 
         Ciphertext encVerticalVecProduct(Ciphertext encZData, Ciphertext encWData, Scheme& scheme, ZZX& poly,  long bBits, long wBits, long pBits); 
 
+        //for GD step and iteration
         void encLGDstep(Ciphertext* encWData, Ciphertext* encGrad, long cnum); 
+        void CipherSVM::encLGDiteration(Ciphertext* encZData,Ciphertext* encAb, Ciphertext* encWData, ZZX& poly, long cnum, double gamma, long sBits, long bBits, long wBits, long pBits, long aBits);
         void decWData(double* wData, Ciphertext* encWData, long factorDim, long batch, long cnum, long wBits);
 
 
