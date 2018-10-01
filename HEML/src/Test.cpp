@@ -35,40 +35,46 @@ using namespace std;
 using namespace NTL;
 
 Ciphertext GenAtA(Ciphertext encZData, Scheme& scheme, ZZX& poly, ZZX& poly2, long bBits, long wBits, long pBits, long batch, long slots) {//AtA만드는 함수
-
+/*
+ A: encZData
+ poly: 첫번째 column만 1인 행렬
+ poly2: 첫번째 row만 1인 행렬
+ bBits: log(batch) = 6
+ batch: row나 column 사이즈(64)
+ slots: matrix 사이즈(64^2)
+ */
 	
-	Ciphertext AtA = scheme.multByPoly(encZData, poly2, pBits);
+	Ciphertext AtA = scheme.multByPoly(encZData, poly2, pBits);  //첫번째 row만 추출
 		for (long l = 0; l < bBits; ++l) {
 			Ciphertext tmp = scheme.rightRotateByPo2(AtA, l+bBits);//
 			scheme.addAndEqual(AtA, tmp);
-		}
+		}//첫번째 row의  copy로 이루어진 행렬 생성
 
-		scheme.multAndEqual(AtA, encZData); // xy * w
+		scheme.multAndEqual(AtA, encZData); // 
 		for (long l = 0; l < bBits; ++l) {
-			Ciphertext rot = scheme.leftRotateByPo2(AtA, bBits+l);//paratmeter check
+			Ciphertext rot = scheme.leftRotateByPo2(AtA, bBits+l);// 
 			scheme.addAndEqual(AtA, rot);
-		}
+		}//벡터 - 행렬 곱 (1번째 row에다가 A를 곱해주는 과정)
 	
 	scheme.reScaleByAndEqual(AtA, wBits);
-	
 
-	scheme.multByPolyAndEqual(AtA, poly2, pBits);
+	scheme.multByPolyAndEqual(AtA, poly2, pBits); //결과물만 추출
 		
 /////////////
 		for(int i=1; i<batch; i++){
 				cout << i  << "AtA row gen" << endl;
 
-		Ciphertext encIPvec = scheme.leftRotate(encZData, (batch*i));
-		scheme.multByPolyAndEqual(encIPvec, poly2, pBits);
+		Ciphertext encIPvec = scheme.leftRotate(encZData, (batch*i)); //i번째 row를 맨 위로 올린 후
+		scheme.multByPolyAndEqual(encIPvec, poly2, pBits); //추출 
 		for (long l = 0; l < bBits; ++l) {
-			Ciphertext tmp = scheme.rightRotateByPo2(encIPvec, l+bBits);//parameter check
+			Ciphertext tmp = scheme.rightRotateByPo2(encIPvec, l+bBits);// 
 			scheme.addAndEqual(encIPvec, tmp);
-		}
+		}//복사
 
-		scheme.multAndEqual(encIPvec, encZData); // xy * w
+		scheme.multAndEqual(encIPvec, encZData); // 
 		for (long l = 0; l < bBits; ++l) {
 
-			Ciphertext rot = scheme.leftRotateByPo2(encIPvec, bBits+l);//paratmeter check
+			Ciphertext rot = scheme.leftRotateByPo2(encIPvec, bBits+l);// 
 			scheme.addAndEqual(encIPvec, rot);
 		}
 	
@@ -76,9 +82,9 @@ Ciphertext GenAtA(Ciphertext encZData, Scheme& scheme, ZZX& poly, ZZX& poly2, lo
 
 				cout << i  << "AtA row gen ff" << endl;
 
-	scheme.multByPolyAndEqual(encIPvec, poly2, pBits);
-	encIPvec = scheme.rightRotate(encIPvec, batch*i);
-	scheme.addAndEqual(AtA, encIPvec);
+	scheme.multByPolyAndEqual(encIPvec, poly2, pBits);  //결과물만 추출
+	encIPvec = scheme.rightRotate(encIPvec, batch*i); //결과물을 i번째 row로 돌려놓음
+	scheme.addAndEqual(AtA, encIPvec); //AtA에 더함
 }
 
 
@@ -91,15 +97,15 @@ Ciphertext GenAbHorzon(Ciphertext encZData, Scheme& scheme, ZZX& poly, long bBit
 	Ciphertext encIPvec=encZData;
 				cout << "AbH" << endl;
 
-	complex<double>* pvals = new complex<double>[slots];
-		for (long j = 0; j < slots; j++) {   //parameter check
+	complex<double>* pvals = new complex<double>[slots];  //1로 가득 차 있는 행렬 생성
+		for (long j = 0; j < slots; j++) {   //
 		pvals[j].real(1.0);
 	}
 	ZZX ptmp = scheme.context.encode(pvals, slots, pBits);
 	delete[] pvals;
 
-	ptmp = ptmp - poly;  
-	scheme.multByPolyAndEqual(encIPvec, ptmp, pBits);
+	ptmp = ptmp - poly;  //1로 가득찬 행렬에서 첫 column만 1인 행렬 빼기
+	scheme.multByPolyAndEqual(encIPvec, ptmp, pBits); //첫 column만 지우기: (0,1,1,1,1,1...)벡터를 곱한것과 같은 효과
 		for (long l = 0; l < bBits; ++l) {
 			Ciphertext rot = scheme.leftRotateByPo2(encIPvec, l);
 			scheme.addAndEqual(encIPvec, rot);
@@ -125,16 +131,17 @@ Ciphertext GenAbVertical(Ciphertext encZData, Scheme& scheme, ZZX& poly, long bB
 	Ciphertext encIPvec=encZData;
 
 		complex<double>* pvals = new complex<double>[slots];
-		for (long j = (1<<bBits); j < slots; j++) {   //parameter check
+		for (long j = (1<<bBits); j < slots; j++) {   // 
 		pvals[j].real(1.0);
-	}
+	}//첫 row만 0이고 나머지 1인 행렬 만들기
 	ZZX ptmp = scheme.context.encode(pvals, slots, pBits);
 
 	delete[] pvals;
-	scheme.multByPolyAndEqual(encIPvec, ptmp, pBits);
+
+	scheme.multByPolyAndEqual(encIPvec, ptmp, pBits);//(0,1,1,1,1,1...)벡터를 곱한것과 같은 효과
 
 	for (long l = 0; l < bBits; ++l) {
-			Ciphertext rot = scheme.leftRotateByPo2(encIPvec, bBits+l);//paratmeter check
+			Ciphertext rot = scheme.leftRotateByPo2(encIPvec, bBits+l);// 
 			scheme.addAndEqual(encIPvec, rot);
 		}
 
@@ -142,7 +149,7 @@ Ciphertext GenAbVertical(Ciphertext encZData, Scheme& scheme, ZZX& poly, long bB
 	
 		scheme.multByPolyAndEqual(encIPvec, poly, pBits); //Vert poly
 	for (long l = 0; l < bBits; ++l) {
-		Ciphertext tmp = scheme.rightRotateByPo2(encIPvec, l+bBits);//parameter check
+		Ciphertext tmp = scheme.rightRotateByPo2(encIPvec, l+bBits);// 
 		scheme.addAndEqual(encIPvec, tmp);
 	}
 
@@ -155,10 +162,16 @@ Ciphertext GenAbVertical(Ciphertext encZData, Scheme& scheme, ZZX& poly, long bB
 //한 벡터의 copy가 각 row를 이루는 행렬을 입력으로 할 때, 출력값은 행렬*벡터 결과값을 한 column로 하고, 모든 column이 그 copy인 행렬인 함수
 
 Ciphertext encHorizonVecProduct(Ciphertext encZData, Ciphertext encWData, Scheme& scheme, ZZX& poly, long bBits, long wBits, long pBits) {
+
+    /*
+     encWData: 한 벡터의 copy가 모든 row에 들어있는 행렬
+     encZData: 곱할 matrix
+     */
+    
 	Ciphertext encIPvec;
-		encIPvec = scheme.modDownTo(encZData, encWData.logq);
-		scheme.multAndEqual(encIPvec, encWData); // xy * w
-		for (long l = 0; l < bBits; ++l) {
+		encIPvec = scheme.modDownTo(encZData, encWData.logq); //encZData의 modulus를 encWData에 맞추는 과정
+		scheme.multAndEqual(encIPvec, encWData); //슬롯끼리 곱셈
+		for (long l = 0; l < bBits; ++l) {//돌아가며 더하기- 내적 과정
 			Ciphertext rot = scheme.leftRotateByPo2(encIPvec, l);
 			scheme.addAndEqual(encIPvec, rot);
 		}
@@ -167,8 +180,8 @@ Ciphertext encHorizonVecProduct(Ciphertext encZData, Ciphertext encWData, Scheme
 
 	scheme.reScaleByAndEqual(encIPvec, wBits);
 	
-	scheme.multByPolyAndEqual(encIPvec, poly, pBits);
-	for (long l = 0; l < bBits; ++l) {
+	scheme.multByPolyAndEqual(encIPvec, poly, pBits);//garbage value 제거
+	for (long l = 0; l < bBits; ++l) {//돌아가며 더하기 - column 복사
 		Ciphertext tmp = scheme.rightRotateByPo2(encIPvec, l);
 		scheme.addAndEqual(encIPvec, tmp);
 	}
@@ -276,11 +289,15 @@ double** zDataFromFile(string& path, long& factorDim, long& sampleDim, bool isfi
 }
 
 
-
-double* zDataFromFileFullA(string& path, long& factorDim, long& sampleDim, long dim) { //완성된 kernel 행렬 가져오기
+//완성된 kernel 행렬 가져오기
+double* zDataFromFileFullA(string& path, long& factorDim, long& sampleDim, long dim) { 
 	double* zeData = new double[dim*dim];
-
-	sampleDim = 0;	// number of samples
+/*
+ dim = 64
+ sampleDim = 샘플 개수 (row 개수)
+ factorDim = attribute 개수 (column 개수)
+ */
+	sampleDim = 0;	
 	ifstream openFile(path.data());
 	if(openFile.is_open()) {
 		string line, temp;
@@ -360,7 +377,7 @@ int main(int argc, char **argv) {
 		const long dim=64;
 	    long sampleDim = dim, factorDim = dim;
 
-		double* zeData = new double[dim*dim];
+		double* zeData = new double[dim*dim];//A 행렬
 
 
 		if(argc >1){ //인자를 입력했을 경우 해당 경로에 있는 matrix를 불러옴
@@ -394,14 +411,14 @@ int main(int argc, char **argv) {
 		//w data generation
 			double* wtData = new double[dim];
 			 	for(long i = 0; i < dim; ++i){
-				wtData[i] = EvaluatorUtils::randomReal(3.0);
+				wtData[i] = EvaluatorUtils::randomReal(1.0);
 				}
 		  
 		  	double* wData = new double[dim*dim];
 			for(long j = 0; j < dim*dim; ++j){
 			wData[j] = wtData[j%dim];
 			} //horizonal copy generation
-		
+		// z를 만드는 과정
 
 
 	long numIter = 1;
