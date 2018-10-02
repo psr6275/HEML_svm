@@ -34,7 +34,7 @@ public:
 
         //for GD step and iteration
         void encLGDstep(Ciphertext* encWData, Ciphertext* encGrad, long cnum); 
-        void CipherSVM::encLGDiteration(Ciphertext* encZData,Ciphertext* encAb, Ciphertext* encWData, ZZX& poly, long cnum, double gamma, long sBits, long bBits, long wBits, long pBits, long aBits);
+        void CipherSVM::encLGDiteration(Ciphertext encZData,Ciphertext encAbV, Ciphertext encAbH, Ciphertext* encWData, ZZX& poly, ZZX& poly2, double gamma, long sBits, long bBits, long wBits, long pBits, long aBits);
         void decWData(double* wData, Ciphertext* encWData, long factorDim, long batch, long cnum, long wBits);
 
 

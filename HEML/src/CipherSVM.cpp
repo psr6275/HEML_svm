@@ -239,19 +239,31 @@ ZZX CipherSVM::generateAuxPoly2(long slots, long batch, long pBits, Scheme& sche
 }
 
 void CipherSVM::encLGDstep(Ciphertext* encWData, Ciphertext* encGrad, long cnum){
-	NTL_EXEC_RANGE(cnum, first, last);
-	for (long i = first; i < last; ++i) {
-		scheme.modDownToAndEqual(encWData[i], encGrad[i].logq);
-		scheme.subAndEqual(encWData[i], encGrad[i]);
-	}
-	NTL_EXEC_RANGE_END;
+	//NTL_EXEC_RANGE(cnum, first, last);
+	//for (long i = first; i < last; ++i) {
+	scheme.modDownToAndEqual(encWData[i], encGrad[i].logq);
+	scheme.subAndEqual(encWData[i], encGrad[i]);
+	//}
+	//NTL_EXEC_RANGE_END;
 }
-void CipherSVM::encLGDiteration(Ciphertext* encAtAData, Ciphertext* encAb, Ciphertext* encWData, ZZX& poly, long cnum, double gamma, long sBits, long bBits, long wBits, long pBits, long aBits) {
- 	Ciphertext* encGrad = new Ciphertext[cnum];
+void CipherSVM::encLGDiteration(Ciphertext encAtAData, Ciphertext encAbV, Ciphertext encAbH, Ciphertext* encWData, ZZX& poly,ZZX& poly2, double gamma, long sBits, long bBits, long wBits, long pBits, long aBits) {
+ 	//Ciphertext* encGrad = new Ciphertext[cnum];
+	//Ciphertext encGrad 
+	//= new Ciphertext[cnum];	
 	Ciphertext encIP = encVerticalVecProduct(encAtAData, encWData, scheme, poly2, bBits, wBits, pBits) ;
-	scheme.subAndEqual(encIP,encAb);
-	encLGDstep(encWData, encGrad, cnum);
-	delete[] encGrad;
+	// 위에 거 결과로 encAtAData와 encWData가 rescale 되지는 않는다.
+	scheme.modDownToAndEqual(encAbH,encIP.logq);
+	scheme.subAndEqual(encIP,encAbH);
+	encLGDstep(encWData, encIP, cnum); 
+
+	//scheme.reScaleByAndEqual(encAtAData,wBits);
+	//encHorizon...에서 먼저 modDown을 해 주고 시작
+	encIP = encHorizonVecProduct(encAtAData, encWData, scheme, poly, bBits, wBits, pBits) ;
+	scheme.modDownToAndEqual(encAbV,encIP.logq);
+	scheme.subAndEqual(encIP,encAbV);
+	encLGDstep(encWData, encGrad, cnum); 
+	
+	delete[] encIP;
 }
 //////////////////////
 //////////////////////
