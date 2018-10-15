@@ -16,10 +16,12 @@ long TrainSVM::suggestLogN(long lambda, long logQ){
     double logNBnd = log2((double)NBnd);
     return (long)ceil(logNBnd);
 }
-void TrainSVM::trainEncLGD(double** zDataTrain, long ADim, long numIter, long lr){
+void TrainSVM::trainEncLGD(double** zDataTrain, long dim, long numIter, long lr){
     
+    //zDataTrain is A matrix!
+    //dim is the number of columns or rows of A matrix!
     //initialize weights (wtData)
-    double* wtData = new double[ADim];
+    double* wtData = new double[dim];
     for(long i=0;i<dim;i++){
         wtData[i] = EvaluatorUtils::randomReal(1.0);
     }
@@ -41,8 +43,7 @@ void TrainSVM::trainEncLGD(double** zDataTrain, long ADim, long numIter, long lr
 	long sdimBits = (long)ceil(log2(sampleDim));
     long kBits = (long)ceil(log2(kdeg));
 
-    long logQ = isInitZero ? (wBits + lBits) + numIter * ((kBits + 1) * wBits + 2 * pBits + aBits) :
-			(sdimBits + wBits + lBits) + numIter * ((kBits + 1) * wBits + 2 * pBits + aBits);
+    long logQ = (sdimBits + wBits + lBits) + numIter * ((kBits + 1) * wBits + 2 * pBits + aBits);
     long logN = TrainSVM::suggestLogN(80, logQ);
 	long bBits = fdimBits;
 	long batch = 1 << bBits;    
@@ -65,7 +66,7 @@ void TrainSVM::trainEncLGD(double** zDataTrain, long ADim, long numIter, long lr
 
 	timeutils.start("Polynomial generating...");
 	ZZX poly = cipherSVM.generateAuxPoly(slots, batch, pBits);  //masking matrix - 1st column만 1, 나머지 0 생성
-	ZZX poly2 = cipherSVM.generateAuxPoly2(slots, batch, pBits, scheme); //masking matrix - 1st row만 1, 나머지 0 생성
+	ZZX poly2 = cipherSVM.generateAuxPoly2(slots, batch, pBits); //masking matrix - 1st row만 1, 나머지 0 생성
 
 	timeutils.stop("Polynomial generation");
 
@@ -82,9 +83,9 @@ void TrainSVM::trainEncLGD(double** zDataTrain, long ADim, long numIter, long lr
 	timeutils.stop("Data encryption");
 
 	timeutils.start("Precomputing");
-	Ciphertext AbV= cipherSVM.GenAbVertical(encZData, scheme, poly2, bBits, wBits, pBits, slots) ; //각 column이 Ab인 행렬 생성
-	Ciphertext AbH= cipherSVM.GenAbHorzon(encZData, scheme, poly, bBits, wBits, pBits, slots) ; //각 Row가 Ab인 행렬 생성
-	Ciphertext AtA= cipherSVM.GenAtA(encZData, scheme, poly, poly2, bBits, wBits, pBits, batch, slots) ; //각 AtA 행렬 생성
+	Ciphertext AbV= cipherSVM.GenAbVertical(encZData, poly2, bBits, wBits, pBits, slots) ; //각 column이 Ab인 행렬 생성
+	Ciphertext AbH= cipherSVM.GenAbHorzon(encZData, poly, bBits, wBits, pBits, slots) ; //각 Row가 Ab인 행렬 생성
+	Ciphertext AtA= cipherSVM.GenAtA(encZData, poly, poly2, bBits, wBits, pBits, batch, slots) ; //각 AtA 행렬 생성
 
 	timeutils.stop("Precomputing Done");
 
@@ -119,7 +120,7 @@ void TrainSVM::trainEncLGD(double** zDataTrain, long ADim, long numIter, long lr
 ///////////
 
 		////Precomputed AtA  : AtA 곱한 후 Ab빼는 방법 : 걸리는 시간 2.5초
-		Ciphertext encIP = encVerticalVecProduct(AtA, encWData, scheme, poly2, bBits, wBits, pBits) ;
+		Ciphertext encIP = cipherSVM.encVerticalVecProduct(AtA, encWData, scheme, poly2, bBits, wBits, pBits) ;
 		scheme.addAndEqual(encIP, AbH);
 
 
