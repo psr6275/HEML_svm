@@ -36,10 +36,13 @@ using namespace NTL;
 
 /// start to define the functions for CipherSVM
 
+/*
+// we need to implemet making kernel matrix, but now, we just bring the full A matrix from csv file
+// we just encrypt the full A matrix at once.
 void CipherSVM::encZData(Ciphertext* encZData, double** zData, long slots, long factorDim, long sampleDim, long batch, long cnum, long wBits, long logQ) {
 	complex<double>* pzData = new complex<double>[slots];
-	/* it should be implemented to deal with large-scale A matrix, 
-	but now we assume that A is not so big.*/
+	// it should be implemented to deal with large-scale A matrix, 
+	//but now we assume that A is not so big.
 	for (long i = 0; i < cnum - 1; ++i) {
 		for (long j = 0; j < sampleDim; ++j) {
 			for (long l = 0; l < batch; ++l) {
@@ -62,6 +65,7 @@ void CipherSVM::encZData(Ciphertext* encZData, double** zData, long slots, long 
 
 	delete[] pzData;
 }
+*/
 
 ///
 Ciphertext CipherSVM::GenAtA(Ciphertext encZData, Scheme& scheme, ZZX& poly, ZZX& poly2, long bBits, long wBits, long pBits, long batch, long slots) {
@@ -238,7 +242,7 @@ ZZX CipherSVM::generateAuxPoly2(long slots, long batch, long pBits, Scheme& sche
 	return msg;
 }
 
-void CipherSVM::encLGDstep(Ciphertext* encWData, Ciphertext* encGrad, long cnum){
+void CipherSVM::encLGDstep(Ciphertext* encWData, Ciphertext* encGrad){
 	//NTL_EXEC_RANGE(cnum, first, last);
 	//for (long i = first; i < last; ++i) {
 	scheme.modDownToAndEqual(encWData[i], encGrad[i].logq);
@@ -265,6 +269,7 @@ void CipherSVM::encLGDiteration(Ciphertext encAtAData, Ciphertext encAbV, Cipher
 	
 	delete[] encIP;
 }
+void CipherSVM::decWData(double* wData, Ciphertext* encWData, long wBits){}
 //////////////////////
 //////////////////////
 double* rawmult(double** zData, double* wtData, long dim){
