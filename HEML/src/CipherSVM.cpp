@@ -119,7 +119,7 @@ Ciphertext CipherSVM::GenAtA(Ciphertext encZData, Scheme& scheme, ZZX& poly, ZZX
 }
 
 
-Ciphertext CipherSVM::GenAbHorzon(Ciphertext encZData, Scheme& scheme, ZZX& poly, long bBits, long wBits, long pBits, long slots) {
+Ciphertext CipherSVM::GenAbHorzon(Ciphertext encZData,  ZZX& poly, long bBits, long wBits, long pBits, long slots) {
 	
 	Ciphertext encIPvec=encZData;
 				cout << "AbH" << endl;
@@ -148,7 +148,7 @@ Ciphertext CipherSVM::GenAbHorzon(Ciphertext encZData, Scheme& scheme, ZZX& poly
 	return encIPvec;
 }
 
-Ciphertext CipherSVM::GenAbVertical(Ciphertext encZData, Scheme& scheme, ZZX& poly, long bBits, long wBits, long pBits, long slots) {
+Ciphertext CipherSVM::GenAbVertical(Ciphertext encZData,  ZZX& poly, long bBits, long wBits, long pBits, long slots) {
 		
 	Ciphertext encIPvec=encZData;
 
@@ -180,7 +180,7 @@ Ciphertext CipherSVM::GenAbVertical(Ciphertext encZData, Scheme& scheme, ZZX& po
 //GenAbHor
 
 
-Ciphertext CipherSVM::encHorizonVecProduct(Ciphertext encZData, Ciphertext encWData, Scheme& scheme, ZZX& poly, long bBits, long wBits, long pBits) {
+Ciphertext CipherSVM::encHorizonVecProduct(Ciphertext encZData, Ciphertext* encWData, Scheme& scheme, ZZX& poly, long bBits, long wBits, long pBits) {
 	Ciphertext encIPvec;
 		encIPvec = scheme.modDownTo(encZData, encWData.logq);
 		scheme.multAndEqual(encIPvec, encWData); // xy * w
@@ -202,7 +202,7 @@ Ciphertext CipherSVM::encHorizonVecProduct(Ciphertext encZData, Ciphertext encWD
 }
 
 //poly V를 넣어야 한다.
-Ciphertext CipherSVM::encVerticalVecProduct(Ciphertext encZData, Ciphertext encWData, Scheme& scheme, ZZX& poly,  long bBits, long wBits, long pBits) {
+Ciphertext CipherSVM::encVerticalVecProduct(Ciphertext encZData, Ciphertext* encWData, Scheme& scheme, ZZX& poly,  long bBits, long wBits, long pBits) {
 	Ciphertext encIPvec;
 		encIPvec = scheme.modDownTo(encZData, encWData.logq);
 		scheme.multAndEqual(encIPvec, encWData); // xy * w
@@ -245,8 +245,8 @@ ZZX CipherSVM::generateAuxPoly2(long slots, long batch, long pBits) {
 void CipherSVM::encLGDstep(Ciphertext* encWData, Ciphertext* encGrad){
 	//NTL_EXEC_RANGE(cnum, first, last);
 	//for (long i = first; i < last; ++i) {
-	scheme.modDownToAndEqual(encWData[i], encGrad[i].logq);
-	scheme.subAndEqual(encWData[i], encGrad[i]);
+	scheme.modDownToAndEqual(encWData, encGrad.logq);
+	scheme.subAndEqual(encWData, encGrad);
 	//}
 	//NTL_EXEC_RANGE_END;
 }
@@ -254,18 +254,18 @@ void CipherSVM::encLGDiteration(Ciphertext encAtAData, Ciphertext encAbV, Cipher
  	//Ciphertext* encGrad = new Ciphertext[cnum];
 	//Ciphertext encGrad 
 	//= new Ciphertext[cnum];	
-	Ciphertext encIP = encVerticalVecProduct(encAtAData, encWData, scheme, poly2, bBits, wBits, pBits) ;
+	Ciphertext encIP = encVerticalVecProduct(encAtAData, encWData,  poly2, bBits, wBits, pBits) ;
 	// 위에 거 결과로 encAtAData와 encWData가 rescale 되지는 않는다.
 	scheme.modDownToAndEqual(encAbH,encIP.logq);
 	scheme.subAndEqual(encIP,encAbH);
-	encLGDstep(encWData, encIP, cnum); 
+	encLGDstep(encWData, encIP); 
 
 	//scheme.reScaleByAndEqual(encAtAData,wBits);
 	//encHorizon...에서 먼저 modDown을 해 주고 시작
-	encIP = encHorizonVecProduct(encAtAData, encWData, scheme, poly, bBits, wBits, pBits) ;
+	encIP = encHorizonVecProduct(encAtAData, encWData,  poly, bBits, wBits, pBits) ;
 	scheme.modDownToAndEqual(encAbV,encIP.logq);
 	scheme.subAndEqual(encIP,encAbV);
-	encLGDstep(encWData, encGrad, cnum); 
+	encLGDstep(encWData, encIP); 
 	
 	delete[] encIP;
 }
