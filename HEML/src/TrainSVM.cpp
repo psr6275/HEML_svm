@@ -11,6 +11,16 @@
 #include "CipherSVM.h"
 #include "EvaluatorUtils.h"
 
+/*to do in this file
+1. revise suggest LogN
+2. specify the proper hyperparameter for encryption (logQ..)
+3. the current version is based on the pre-computed a-matrix, 
+    but we need to improve this by implementing to calculate 
+    the a-matrix from the original data file.
+4. expandable code for split matrix storage!
+    Now, we just suppose that the matrix is not that big and
+    can be stored in a ciphertext. */
+
 long TrainSVM::suggestLogN(long lambda, long logQ){
     long NBnd = ceil(logQ * (lambda +110) /3.6);
     double logNBnd = log2((double)NBnd);
