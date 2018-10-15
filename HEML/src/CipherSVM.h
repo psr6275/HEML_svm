@@ -17,7 +17,7 @@ public:
 
         CipherSVM(Scheme& scheme, SecretKey& secretKey) : scheme(scheme), secretKey(secretKey) {}
         
-        void encZData(Ciphertext* encZData, double** zData, long slots, long factorDim, long sampleDim, long batch, long cnum, long wBits, long logQ);
+        void encZData(Ciphertext encZData, double** zData, long slots, long factorDim, long sampleDim, long batch, long cnum, long wBits, long logQ);
         //the first row is 1
         ZZX generateAuxPoly(long slots, long batch, long pBits);
         //the first column is 1
@@ -29,11 +29,11 @@ public:
         Ciphertext GenAbVertical(Ciphertext encZData,  ZZX& poly, long bBits, long wBits, long pBits, long slots);
 
         //operations for GD step
-        Ciphertext encHorizonVecProduct(Ciphertext encZData, Ciphertext* encWData,  ZZX& poly, long bBits, long wBits, long pBits); 
-        Ciphertext encVerticalVecProduct(Ciphertext encZData, Ciphertext* encWData,  ZZX& poly,  long bBits, long wBits, long pBits); 
+        Ciphertext encHorizonVecProduct(Ciphertext encZData, Ciphertext encWData,  ZZX& poly, long bBits, long wBits, long pBits); 
+        Ciphertext encVerticalVecProduct(Ciphertext encZData, Ciphertext encWData,  ZZX& poly,  long bBits, long wBits, long pBits); 
 
         //for GD step and iteration
-        void encLGDstep(Ciphertext* encWData, Ciphertext* encGrad); 
+        void encLGDstep(Ciphertext encWData, Ciphertext encGrad); 
         void encLGDiteration(Ciphertext encZData,Ciphertext encAbV, Ciphertext encAbH, Ciphertext* encWData, ZZX& poly, ZZX& poly2, double gamma, long sBits, long bBits, long wBits, long pBits, long aBits);
         void decWData(double* wData, Ciphertext* encWData, long wBits);
 
