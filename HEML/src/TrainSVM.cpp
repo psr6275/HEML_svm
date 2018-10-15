@@ -136,5 +136,4 @@ void TrainSVM::trainEncLGD(double* zDataTrain, long dim, long numIter, long lr){
 	
 
 
-	return 0;
 }
