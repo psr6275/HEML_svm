@@ -4,8 +4,8 @@
 //#include "NTL/ZZX.h" if we include this file to Library package, we don't have to do this. 
 #include <Scheme.h>
 #include <SecretKey.h>
-#include <CipherGD.h>
 #include <complex>
+#include "CipherGD.h"
 
 using namespace std;
 using namespace NTL;
