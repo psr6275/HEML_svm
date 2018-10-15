@@ -65,6 +65,7 @@ int main(int argc, char **argv){
     
     SetNumThreads(8);
     const long dim=64;
+    long factorDim = dim, sampleDim = dim;
     long numIter = 3;
     long lr = 0.1;
     string trainfile(argv[1]);
