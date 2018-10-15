@@ -120,18 +120,18 @@ void TrainSVM::trainEncLGD(double** zDataTrain, long dim, long numIter, long lr)
 ///////////
 
 		////Precomputed AtA  : AtA 곱한 후 Ab빼는 방법 : 걸리는 시간 2.5초
-		Ciphertext encIP = cipherSVM.encVerticalVecProduct(AtA, encWData, scheme, poly2, bBits, wBits, pBits) ;
-		scheme.addAndEqual(encIP, AbH);
+		//Ciphertext encIP = cipherSVM.encVerticalVecProduct(AtA, encWData, scheme, poly2, bBits, wBits, pBits) ;
+		//scheme.addAndEqual(encIP, AbH);
 
 
-		complex<double>* msgg = scheme.decrypt(secretKey, encIP);
+		//complex<double>* msgg = scheme.decrypt(secretKey, encIP);
 
 
 	
 
 
 
-		timeutils.stop("mult iter end");
+		//timeutils.stop("mult iter end");
 
 	
 
