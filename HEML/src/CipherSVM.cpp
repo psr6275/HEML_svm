@@ -245,8 +245,8 @@ ZZX CipherSVM::generateAuxPoly2(long slots, long batch, long pBits) {
 void CipherSVM::encLGDstep(Ciphertext* encWData, Ciphertext* encGrad){
 	//NTL_EXEC_RANGE(cnum, first, last);
 	//for (long i = first; i < last; ++i) {
-	scheme.modDownToAndEqual(encWData, encGrad.logq);
-	scheme.subAndEqual(encWData, encGrad);
+	scheme.modDownToAndEqual(encWData[0], encGrad[0].logq);
+	scheme.subAndEqual(encWData[0], encGrad[0]);
 	//}
 	//NTL_EXEC_RANGE_END;
 }

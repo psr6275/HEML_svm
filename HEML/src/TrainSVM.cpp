@@ -16,7 +16,7 @@ long TrainSVM::suggestLogN(long lambda, long logQ){
     double logNBnd = log2((double)NBnd);
     return (long)ceil(logNBnd);
 }
-void TrainSVM::trainEncNLGD(double** zDataTrain, long ADim, long numIter, long lr){
+void TrainSVM::trainEncLGD(double** zDataTrain, long ADim, long numIter, long lr){
     
     //initialize weights (wtData)
     double* wtData = new double[ADim];
