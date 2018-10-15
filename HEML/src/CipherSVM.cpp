@@ -180,7 +180,7 @@ Ciphertext CipherSVM::GenAbVertical(Ciphertext encZData,  ZZX& poly, long bBits,
 //GenAbHor
 
 
-Ciphertext CipherSVM::encHorizonVecProduct(Ciphertext encZData, Ciphertext* encWData, Scheme& scheme, ZZX& poly, long bBits, long wBits, long pBits) {
+Ciphertext CipherSVM::encHorizonVecProduct(Ciphertext encZData, Ciphertext* encWData, ZZX& poly, long bBits, long wBits, long pBits) {
 	Ciphertext encIPvec;
 		encIPvec = scheme.modDownTo(encZData, encWData.logq);
 		scheme.multAndEqual(encIPvec, encWData); // xy * w
@@ -202,7 +202,7 @@ Ciphertext CipherSVM::encHorizonVecProduct(Ciphertext encZData, Ciphertext* encW
 }
 
 //poly V를 넣어야 한다.
-Ciphertext CipherSVM::encVerticalVecProduct(Ciphertext encZData, Ciphertext* encWData, Scheme& scheme, ZZX& poly,  long bBits, long wBits, long pBits) {
+Ciphertext CipherSVM::encVerticalVecProduct(Ciphertext encZData, Ciphertext* encWData, ZZX& poly,  long bBits, long wBits, long pBits) {
 	Ciphertext encIPvec;
 		encIPvec = scheme.modDownTo(encZData, encWData.logq);
 		scheme.multAndEqual(encIPvec, encWData); // xy * w
@@ -267,7 +267,7 @@ void CipherSVM::encLGDiteration(Ciphertext encAtAData, Ciphertext encAbV, Cipher
 	scheme.subAndEqual(encIP,encAbV);
 	encLGDstep(encWData, encIP); 
 	
-	delete[] encIP;
+	//delete[] encIP;//pointer가 아니어서 error???
 }
 void CipherSVM::decWData(double* wData, Ciphertext* encWData, long wBits){}
 //////////////////////
