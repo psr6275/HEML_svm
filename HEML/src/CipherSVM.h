@@ -37,4 +37,5 @@ public:
         void CipherSVM::encLGDiteration(Ciphertext encZData,Ciphertext encAbV, Ciphertext encAbH, Ciphertext* encWData, ZZX& poly, ZZX& poly2, double gamma, long sBits, long bBits, long wBits, long pBits, long aBits);
         void decWData(double* wData, Ciphertext* encWData, long wBits);
 
-}
+};
+#endif
