@@ -5,7 +5,8 @@ class TrainSVM{
     public:
         static long suggestLogN(long lambda, long logQ);
 
-        static void trainEncLGD(double* zDataTrain, long dim, long numIter, long lr);
+        static void trainEncLGD(double* zDataTrain, long dim, long numIter, double lr);
+        
 
     
     

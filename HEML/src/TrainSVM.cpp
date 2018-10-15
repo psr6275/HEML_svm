@@ -26,7 +26,7 @@ long TrainSVM::suggestLogN(long lambda, long logQ){
     double logNBnd = log2((double)NBnd);
     return (long)ceil(logNBnd);
 }
-void TrainSVM::trainEncLGD(double* zDataTrain, long dim, long numIter, long lr){
+void TrainSVM::trainEncLGD(double* zDataTrain, long dim, long numIter, double lr){
     
     //zDataTrain is A matrix but neet to be vertorized! So, this shape is dim*dim.
     //dim is the number of columns or rows of A matrix!
