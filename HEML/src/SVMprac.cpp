@@ -15,6 +15,11 @@ using namespace NTL;
 */
 
 //완성된 kernel 행렬 가져오기
+/*
+* what to improve?
+* we read the number of instance automatically!
+* we also read the original training and test matrix!
+*/
 double* zDataFromFileFullA(string& path, long& factorDim, long& sampleDim, long dim) { 
 	double* zeData = new double[dim*dim];
 /*
