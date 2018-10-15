@@ -98,7 +98,7 @@ void TrainSVM::trainEncLGD(double** zDataTrain, long dim, long numIter, long lr)
         timeutils.start("Enc LGD");
         cipherSVM.encLGDiteration(AtA,AbV,AbH,encWData,poly,poly2,lr,sBits,bBits,wBits,pBits,aBits);
         timeutils.stop("Enc LGD");
-        cout << "encWData.logq after: " << encWData[0].logq << endl;
+        cout << "encWData.logq after: " << encWData.logq << endl;
         //learning 이 잘 되었는지는 어차피 Decrypt된 상태에서 하네... 일단 얘 먼저 test 해야할듯 
         }
 
