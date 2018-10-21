@@ -27,6 +27,7 @@ double* zDataFromFileFullA(string& path, long& factorDim, long& sampleDim, long 
  sampleDim = 샘플 개수 (row 개수)
  factorDim = attribute 개수 (column 개수)
  */
+// test
 	sampleDim = 0;	
 	ifstream openFile(path.data());
 	if(openFile.is_open()) {
@@ -60,10 +61,12 @@ double* zDataFromFileFullA(string& path, long& factorDim, long& sampleDim, long 
 }
 
 
+
 /*
 * This file load the a-matrix first
 * and then execute the training procedure
 */
+
 
 
 int main(int argc, char **argv){
