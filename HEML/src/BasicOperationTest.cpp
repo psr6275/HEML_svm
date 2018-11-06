@@ -51,9 +51,9 @@ int main(){
     //make a A matrix!
     for(long i = 0; i<m;i++){
         for(long j=0;j<n;j++){
-            A[i*m+j] = i*m+j;
-            B[i*m+j] = b[j];
-            cout<< "idx = "<<i*m+j<<", A[idx] = "<<A[i*m+j]<<", B[idx] = "<<B[i*m+j]<<endl;
+            A[i*n+j] = i*n+j;
+            B[i*n+j] = b[j];
+            cout<< "idx = "<<i*n+j<<", A[idx] = "<<A[i*n+j]<<", B[idx] = "<<B[i*n+j]<<endl;
         }
     }
     long logN=14;
@@ -69,13 +69,13 @@ int main(){
     complex<double>* DataA = new complex<double>[slots];
     complex<double>* DataB = new complex<double>[slots];
     Ciphertext cipherA, cipherB;
-    for(long i = 0;i<slots;i++){
-        DataA[i] = 0;
-        DataB[i] = 0;
-    }
+    //for(long i = 0;i<slots;i++){
+    //    DataA[i] = 0;
+    //    DataB[i] = 0;
+    //}
     for(long i = 0;i<m;i++){
         for(long j = 0;j<n;j++){
-            DataA[batch*i+j].real(A[m*i+j]);
+            DataA[batch*i+j].real(A[n*i+j]);
             DataB[batch*i+j].real(b[j]);
         }
     }
@@ -83,7 +83,7 @@ int main(){
     for(long l=0;l<slots;l++){
         cout<<"print DataA: "<<DataA[l]<<" | print DataB: "<<DataB[l]<<endl;
     }
-    
+    cout<<"end here!"<<endl;  
     cipherA = scheme.encrypt(DataA,slots,wBits, logQ);
     cipherB = scheme.encrypt(DataB,slots,wBits,logQ);
 
