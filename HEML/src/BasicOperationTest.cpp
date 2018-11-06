@@ -89,7 +89,7 @@ int main(){
     }
     ZZX msg = scheme.context.encode(pvals,slots,pBits);
     //ZZX msg2 = scheme.encode(pvals,slots,pBits);// encode는 꼭 4개의 argumetn 필요!
-    cout<<"msg: "<<msg<<endl;
+    //cout<<"msg: "<<msg<<endl;
     //cout<<"msg2: "<<msg2<<endl;
     //cout<<"msg2: logp "<<msg2.logp<<", logq "<<msg2.logq<<endl; 
 
