@@ -84,13 +84,14 @@ int main(){
     cipherB = scheme.encrypt(DataB,slots,wBits,logQ)
 
     complex<double>* pvals = new complex<double>[slots]
-    for (long i=0;i<slots;i+=batch){
+    for (i=0;i<slots;i+=batch){
         pvals[i].real(1.0);
     }
     ZZX msg = scheme.context.encode(pvals,slots,pBits);
     ZZX msg2 = scheme.encode(pvals,slots,pBits);
     cout<<"msg: "<<msg<<endl;
-    cout<<"msg2: logp "<<msg2.logp<<", logq "<<msg2.logq<<endl; 
+    cout<<"msg2: "<<msg2<<endl;
+    //cout<<"msg2: logp "<<msg2.logp<<", logq "<<msg2.logq<<endl; 
 
     Ciphertext encIP = scheme.mult(cipherA,cipherB);
     
