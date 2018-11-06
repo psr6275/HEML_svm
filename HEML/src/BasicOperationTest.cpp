@@ -58,7 +58,7 @@ int main(){
     }
     long logN=14;
     long logQ=400;
-    long logp=40;//polynomial encode 와 관련 있는 것으로 왠지 scaling factor와 관련 있는듯!
+    long pBits=40;//polynomial encode 와 관련 있는 것으로 왠지 scaling factor와 관련 있는듯!
     //근데 그냥 바로 real-valued 부터 encrypt하면 그런건 어떻게 설정되지?
     long wBits=30;//logp 즉 한번 rescale시 깎이는 것고 관련!
 
@@ -83,8 +83,8 @@ int main(){
     cipherA = scheme.encrypt(DataA,slots,wBits, logQ);
     cipherB = scheme.encrypt(DataB,slots,wBits,logQ)
 
-    complex<double>* pvals = new complex<double>[slots]
-    for (i=0;i<slots;i+=batch){
+    complex<double>* pvals = new complex<double>[slots];
+    for(long i=0;i<slots;i+=batch){
         pvals[i].real(1.0);
     }
     ZZX msg = scheme.context.encode(pvals,slots,pBits);
