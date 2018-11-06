@@ -108,6 +108,7 @@ Ciphertext GenAbHorzon(Ciphertext encZData, Scheme& scheme, ZZX& poly, long bBit
 	scheme.multByPolyAndEqual(encIPvec, ptmp, pBits); //첫 column만 지우기: (0,1,1,1,1,1...)벡터를 곱한것과 같은 효과
 		for (long l = 0; l < bBits; ++l) {
 			Ciphertext rot = scheme.leftRotateByPo2(encIPvec, l);
+			//왠지 여기에서 pBits가 한번 modulus domwn 할 때 깎이는 정도인거 같은데 
 			scheme.addAndEqual(encIPvec, rot);
 		}
 

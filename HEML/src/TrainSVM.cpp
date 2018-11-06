@@ -111,6 +111,12 @@ void TrainSVM::trainEncLGD(double* zDataTrain, long dim, long numIter, double lr
         cout << "encWData.logq after: " << encWData.logq << endl;
         //learning 이 잘 되었는지는 어차피 Decrypt된 상태에서 하네... 일단 얘 먼저 test 해야할듯 
         }
+	
+	//obtain [b,ay] for testing!
+	Ciphertext encValw = scheme.modDownTo(encZData, encWData.logq);
+	scheme.multAndEqual(encValw,encWData);
+	
+	
 
 
 

@@ -7,7 +7,7 @@ class TrainSVM{
 
         static void trainEncLGD(double* zDataTrain, long dim, long numIter, double lr);
         
-
+        //static void testEncLGD(double* zDataTest, bool isFirst,);
     
     
 };

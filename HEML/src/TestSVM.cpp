@@ -9,7 +9,13 @@
 #include <cmath>
 
 #include "CipherSVM.h"
+// all operations are done in plaintext domain
 
-void TestSVM::testCipherSVM
-void TestSVM::testPlainSVM
-void TestSVM::testAccuracy
+//void TestSVM::decWData(cwData, encWData,wBits); 
+// CipherSVM has decWData
+//void TestSVM::testCipherSVM
+class TestSVM{
+    public: 
+        //void TestSVM::testPlainSVM
+        static void testAccuracy(double* zDataTest, double* evalwData,long sampleDimTrain,long sampleDimTest, double& accr);
+}

@@ -179,7 +179,7 @@ Ciphertext CipherSVM::GenAbVertical(Ciphertext encZData,  ZZX& poly, long bBits,
 
 //GenAbHor
 
-
+//여기에서의 matrix * vector 연산은 반드시 matrix가 symmetric이여야지 reasonable! maybe...
 Ciphertext CipherSVM::encHorizonVecProduct(Ciphertext encZData, Ciphertext encWData, ZZX& poly, long bBits, long wBits, long pBits) {
 	Ciphertext encIPvec;
 		encIPvec = scheme.modDownTo(encZData, encWData.logq);

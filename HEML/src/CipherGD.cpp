@@ -85,12 +85,17 @@ void CipherGD::encWVDataZero(Ciphertext* encWData, Ciphertext* encVData, long cn
 }
 
 ZZX CipherGD::generateAuxPoly(long slots, long batch, long pBits) {
+	//여기에서 왠지 batch가 cnum일 것 같아!
 	complex<double>* pvals = new complex<double>[slots];
+	//new complex만들면 처음에 0이 다 채워지나봐!
+	//여기에서 slots은 cnum*한개의 plaintext vector의 크기일 듯!
 	for (long j = 0; j < slots; j += batch) {
 		pvals[j].real(1.0);
 	}
 	ZZX msg = scheme.context.encode(pvals, slots, pBits);
+	//왠지 여기에서 pBits가 한번 modulus domwn 할 때 깎이는 정도인거 같은데 
 	delete[] pvals;
+	//constant 에 대한 polynomial 을 얻었어! 얘는 암호화 되지 않은 그냥 polynomial이얌!
 	return msg;
 }
 
@@ -112,11 +117,16 @@ Ciphertext CipherGD::encInnerProduct(Ciphertext* encZData, Ciphertext* encWData,
 	}
 
 	scheme.reScaleByAndEqual(encIP, wBits);
+	//어차피 곱한 것들을 더해 주는 거였으니깐 여기에서 한번에 rescale해준다
 	scheme.multByPolyAndEqual(encIP, poly, pBits);
+	//이 function "multByPylyAndEqual"은 알아서 rescaling해주나? pBits뭘까?
+	//poly도 정확하게 무엇인지 다시 보자!
+	//slot에서 제일 처음 값만 두고 나머지 아래 애들은 masking해버린다.
 	for (long l = 0; l < bBits; ++l) {
 		Ciphertext tmp = scheme.rightRotateByPo2(encIP, l);
 		scheme.addAndEqual(encIP, tmp);
 	}
+	//모든 slot이 같은 값을 가지도록 다시 반복해준다!
 	delete[] encIPvec;
 	return encIP;
 }
