@@ -37,7 +37,7 @@ using namespace NTL;
 
 int main(){
     const long dim=4;
-    long m = 3,n=2;
+    long m = 5,n=3;
     long fdimBits = (long)ceil(log2(n));
     long sdimBits = (long)ceil(log2(m));
     long sBits = fdimBits+ sdimBits;
@@ -47,6 +47,7 @@ int main(){
     double* b = new double[n];
     b[0] = 1;
     b[1] = 3;
+    b[2] = 5;
     double* B = new double[m*n];
     //make a A matrix!
     for(long i = 0; i<m;i++){
@@ -88,8 +89,10 @@ int main(){
     cipherB = scheme.encrypt(DataB,slots,wBits,logQ);
 
     complex<double>* pvals = new complex<double>[slots];
+    
     for(long i=0;i<slots;i+=batch){
         pvals[i].real(1.0);
+        cout<<"pvals[i] = "<<i<<endl;
     }
     ZZX msg = scheme.context.encode(pvals,slots,pBits);
     //ZZX msg2 = scheme.encode(pvals,slots,pBits);// encode는 꼭 4개의 argumetn 필요!
