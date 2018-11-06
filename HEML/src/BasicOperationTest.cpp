@@ -81,7 +81,7 @@ int main(){
     }
     
     cipherA = scheme.encrypt(DataA,slots,wBits, logQ);
-    cipherB = scheme.encrypt(DataB,slots,wBits,logQ)
+    cipherB = scheme.encrypt(DataB,slots,wBits,logQ);
 
     complex<double>* pvals = new complex<double>[slots];
     for(long i=0;i<slots;i+=batch){
