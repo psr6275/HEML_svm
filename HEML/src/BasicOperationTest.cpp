@@ -81,7 +81,7 @@ int main(){
     }
     
     cipherA = scheme.encrypt(DataA,slots,wBits, logQ);
-    cipherB = shceme.encrypt(DataB,slots,wBits,logQ)
+    cipherB = scheme.encrypt(DataB,slots,wBits,logQ)
 
     complex<double>* pvals = new complex<double>[slots]
     for (long i=0;i<slots;i+=batch){
@@ -89,10 +89,10 @@ int main(){
     }
     ZZX msg = scheme.context.encode(pvals,slots,pBits);
     ZZX msg2 = scheme.encode(pvals,slots,pBits);
-    cout<<"msg: logp "<<msg.logp<<", logq "<<msg.logq<<endl;
+    cout<<"msg: "<<msg<<endl;
     cout<<"msg2: logp "<<msg2.logp<<", logq "<<msg2.logq<<endl; 
 
-    Ciphertext cipherIP = scheme.mult(cipherA,cipherB);
+    Ciphertext encIP = scheme.mult(cipherA,cipherB);
     
     for(long l = 0;l<fdimBits;l++){
         Ciphertext rot = scheme.leftRotateByPo2(encIP,l);
@@ -103,7 +103,7 @@ int main(){
     cout<<"after rescale encIP.logq: "<<encIP.logq<<endl;
 
     scheme.multByPolyAndEqual(encIP,msg,pBits);
-    cout<<"msg: logp "<<msg.logp<<", logq "<<msg.logq<<endl;
+    //cout<<"msg: logp "<<msg.logp<<", logq "<<msg.logq<<endl;
     cout<<"after polynomial mult encIP.logq: "<<encIP.logq<<endl;
 
     complex<double>* DResults = scheme.decrypt(secretKey,encIP);
