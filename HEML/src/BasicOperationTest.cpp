@@ -70,7 +70,7 @@ int main(){
     complex<double>* DataB = new complex<double>[slots];
     Ciphertext cipherA, cipherB;
     for(long i = 0;i<m;i++){
-        for(long j = 1;j<n;j++){
+        for(long j = 0;j<n;j++){
             DataA[batch*i+j].real(A[m*i+j]);
             DataB[batch*i+j].real(b[j]);
         }
