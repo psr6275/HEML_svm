@@ -61,7 +61,7 @@ int main(){
     long pBits=40;//polynomial encode 와 관련 있는 것으로 왠지 scaling factor와 관련 있는듯!
     //근데 그냥 바로 real-valued 부터 encrypt하면 그런건 어떻게 설정되지?
     long wBits=30;//logp 즉 한번 rescale시 깎이는 것고 관련!
-
+    
     Context context(logN,logQ);
     SecretKey secretKey(logN);
     Scheme scheme(secretKey,context);
@@ -69,6 +69,10 @@ int main(){
     complex<double>* DataA = new complex<double>[slots];
     complex<double>* DataB = new complex<double>[slots];
     Ciphertext cipherA, cipherB;
+    for(long i = 0;i<slots;i++){
+        DataA[i] = 0;
+        DataB[i] = 0;
+    }
     for(long i = 0;i<m;i++){
         for(long j = 0;j<n;j++){
             DataA[batch*i+j].real(A[m*i+j]);
