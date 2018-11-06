@@ -35,7 +35,7 @@ using namespace std;
 using namespace NTL;
 
 
-int main(int argc, char **argv){
+int main(){
     const long dim=4;
     long m = 3,n=2;
     long fdimBits = (long)ceil(log2(n));
@@ -43,9 +43,8 @@ int main(int argc, char **argv){
     long sBits = fdimBits+ sdimBits;
     long batch = 1<<fdimBits;//dimensoin을 2의 power로 다시 구한것! 넉넉히 더 효율적인 벡터 메트릭스 곱 위해서
     long slots = 1<<sBits;
-    cout<< 
     double* A = new double[m*n];
-    double* b = new doublep[n];
+    double* b = new double[n];
     b[0] = 1;
     b[1] = 3;
     double* B = new double[m*n];
@@ -54,7 +53,7 @@ int main(int argc, char **argv){
         for(long j=0;j<n;j++){
             A[i*m+j] = i*m+j;
             B[i*m+j] = b[j];
-            count<< "idx = "<<i*m+j<<", A[idx] = "<<A[i*m+j]<<", B[idx] = "<<B[i*m+j]<<endl;
+            cout<< "idx = "<<i*m+j<<", A[idx] = "<<A[i*m+j]<<", B[idx] = "<<B[i*m+j]<<endl;
         }
     }
     long logN=14;
