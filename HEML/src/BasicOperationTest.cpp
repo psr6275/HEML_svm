@@ -62,10 +62,13 @@ int main(){
     long pBits=40;//polynomial encode 와 관련 있는 것으로 왠지 scaling factor와 관련 있는듯!
     //근데 그냥 바로 real-valued 부터 encrypt하면 그런건 어떻게 설정되지?
     long wBits=30;//logp 즉 한번 rescale시 깎이는 것고 관련!
+    cout<<"number of slots: "<<slots<<endl;
     
     Context context(logN,logQ);
     SecretKey secretKey(logN);
     Scheme scheme(secretKey,context);
+    scheme.addLeftRotKeys(secretKey);
+    scheme.addRightRotKeys(secretKey);
 
     complex<double>* DataA = new complex<double>[slots];
     complex<double>* DataB = new complex<double>[slots];
@@ -101,11 +104,16 @@ int main(){
     //cout<<"msg2: logp "<<msg2.logp<<", logq "<<msg2.logq<<endl; 
 
     Ciphertext encIP = scheme.mult(cipherA,cipherB);
+   
+    cout<<"start to inner product!"<<endl; 
+    cout<<"Results for cipherA * cipher B"<<endl;
     
     for(long l = 0;l<fdimBits;l++){
+        cout<<"fdimBits: "<<fdimBits<<" and rotate: "<<l<<endl;
         Ciphertext rot = scheme.leftRotateByPo2(encIP,l);
         scheme.addAndEqual(encIP,rot);    
     }
+
     cout<<"before rescale encIP.logq: "<<encIP.logq<<endl;
     scheme.reScaleByAndEqual(encIP,wBits);
     cout<<"after rescale encIP.logq: "<<encIP.logq<<endl;
