@@ -115,9 +115,14 @@ void TrainSVM::trainEncLGD(double* zDataTrain, long dim, long numIter, double lr
 	//obtain [b,ay] for testing!
 	Ciphertext encValw = scheme.modDownTo(encZData, encWData.logq);
 	scheme.multAndEqual(encValw,encWData);
+	//comparing and testing the trained results here!
+	cout<<"end training"<<endl;
+	cout<<"resulting A matrix"<<TrainSVM::decAData(encValw,wBits)<<endl;
 	
 	
-
+void trainSVM::decAData(double* AData, Ciphertext encAData, long wBits){
+	complex<double>* AData = scheme.decrypt(secretKey,encAData);
+}
 
 
 

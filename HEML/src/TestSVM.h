@@ -3,5 +3,5 @@
 
 class TestSVM {
     public:
-        static void 
+        static void testEncLGD(double *)
 }
