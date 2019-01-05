@@ -117,12 +117,16 @@ int main(){
     cout<<"before rescale encIP.logq: "<<encIP.logq<<endl;
     scheme.reScaleByAndEqual(encIP,wBits);
     cout<<"after rescale encIP.logq: "<<encIP.logq<<endl;
-
+    complex<double>* DResults = scheme.decrypt(secretKey,encIP);
+    cout<<"Results: "<<endl;
+    for (long i = 0; i<slots;i++){
+        cout<< DResults[i] <<endl;
+    }
     scheme.multByPolyAndEqual(encIP,msg,pBits);
     //cout<<"msg: logp "<<msg.logp<<", logq "<<msg.logq<<endl;
     cout<<"after polynomial mult encIP.logq: "<<encIP.logq<<endl;
 
-    complex<double>* DResults = scheme.decrypt(secretKey,encIP);
+    DResults = scheme.decrypt(secretKey,encIP);
     cout<<"Results: "<<endl;
     for (long i = 0; i<slots;i++){
         cout<< DResults[i] <<endl;
