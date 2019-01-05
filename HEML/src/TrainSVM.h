@@ -6,7 +6,7 @@ class TrainSVM{
         static long suggestLogN(long lambda, long logQ);
 
         static void trainEncLGD(double* zDataTrain, long dim, long numIter, double lr);
-        
+        static void decAData(double* AData, Ciphertext encAData,long wBits);
         //static void testEncLGD(double* zDataTest, bool isFirst,);
     
     
