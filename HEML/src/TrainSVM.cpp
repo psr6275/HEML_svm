@@ -68,7 +68,7 @@ void TrainSVM::trainEncLGD(double* zDataTrain, long dim, long numIter, double lr
 	timeutils.start("Scheme generating...");
 	Context context(logN, logQ);
 	SecretKey secretKey(logN);
-	Scheme scheme(secretKey, context);
+        Scheme scheme(secretKey, context);
 	scheme.addLeftRotKeys(secretKey);
 	scheme.addRightRotKeys(secretKey);
 	timeutils.stop("Scheme generation");
