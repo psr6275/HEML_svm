@@ -26,14 +26,14 @@ TrainSVM::TrainSVM(long dims, long numIters){
 	dim = dims;
 	numIter = numIters;
 
-	long wBits = 30;
+	wBits = 30;
 	pBits = 20;
 	long lBits = 5;
 	long aBits = 3;
 	long dimBits =(long)ceil(log2(dim)); 
-	long logQ = (dimBits + wBits + lBits) + numIter * ((3 + 1) * wBits + 2 * 3 + aBits);
+	logQ = (dimBits + wBits + lBits) + numIter * ((3 + 1) * wBits + 2 * 3 + aBits);
     long logN = TrainSVM::suggestLogN(80, logQ);
-	long bBits = dimBits;
+	bBits = dimBits;
 	batch = 1 << bBits;    
 	long sBits = dimBits + bBits;
 	slots =  1 << sBits;
@@ -58,7 +58,7 @@ long TrainSVM::suggestLogN(long lambda, long logQ){
     double logNBnd = log2((double)NBnd);
     return (long)ceil(logNBnd);
 }
-void TrainSVM::trainEncLGD(double* zDataTrain, long dim, long numIter, double lr){
+void TrainSVM::trainEncLGD(double* zDataTrain, double lr){
     
     //zDataTrain is A matrix but neet to be vertorized! So, this shape is dim*dim.
     //dim is the number of columns or rows of A matrix!
@@ -71,6 +71,9 @@ void TrainSVM::trainEncLGD(double* zDataTrain, long dim, long numIter, double lr
     for(long j=0;j<dim*dim;j++){
         wData[j] = wtData[j%dim];
     }//horizontal copy generation
+
+	//wtData after training
+	double* cwtData = new double[dim];
 
     //Set parameters and create scheme
     
@@ -117,11 +120,13 @@ void TrainSVM::trainEncLGD(double* zDataTrain, long dim, long numIter, double lr
 	encValw = scheme.modDownTo(encZData, encWData.logq);
 	scheme.multAndEqual(encValw,encWData);
 	//comparing and testing the trained results here!
+	//decrypt the trained vector
+	TrainSVM::decAData(cwtData,encValw);
 	cout<<"end training"<<endl;
-	cout<<"resulting A matrix"<<TrainSVM::decAData(encValw,wBits)<<endl;
+	cout<<"resulting cwt vector"<<cwtData<<endl;
 	
 	
-void trainSVM::decAData(double* AData, Ciphertext encAData, long wBits){
+void trainSVM::decAData(double* AData, Ciphertext encAData){
 	complex<double>* AData = scheme.decrypt(secretKey,encAData);
 }
 

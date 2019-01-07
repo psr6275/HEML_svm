@@ -3,6 +3,7 @@
 #include <Scheme.h>
 #include <SecretKey.h>
 #include <Ciphertext.h>
+#include "cipherSVM.h"
 
 #include <complex>
 
@@ -15,15 +16,16 @@ class TrainSVM{
         Scheme scheme;
         SecretKey secretKey;
         Context context;
-        long dim, numIter,slots, batch, pBits;
+        long dim, numIter,slots, batch, pBits,wBits,bBits;
+        long logQ;
         CipherSVM cipherSVM;
         //resulting vector
         Ciphertext encValw;
         
         long suggestLogN(long lambda, long logQ);
 Scheme& 
-        //id trainEncLGD(double* zDataTrain, long dim, long numIter, double lr);
-        void decAlong dims, long numItersertext encAData,long wBits);
+        void trainEncLGD(double* zDataTrain, double lr);
+        void decAData(double* AData, Ciphertext encAData);
         //static void testEncLGD(double* zDataTest, bool isFirst,);
     
     

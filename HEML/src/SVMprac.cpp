@@ -80,7 +80,8 @@ int main(int argc, char **argv){
     cout<<"Start to load data"<<endl;
     double* zeData = zDataFromFileFullA(trainfile, factorDim, sampleDim, dim);
     cout<<"Start to training procedure!"<<endl;
-    TrainSVM::trainEncLGD(zeData, dim, numIter,lr);
+	TrainSVM trainSVM(dim,numIter);
+    TrainSVM.trainEncLGD(zeData, lr);
 
     return 0;
     
