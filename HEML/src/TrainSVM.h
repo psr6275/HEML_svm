@@ -11,14 +11,19 @@ using namespace NTL;
 
 class TrainSVM{
     public:
-        Scheme& scheme;
-        SecretKey& secretKey;
-        TrainSVM(Scheme& scheme, SecretKey& secretKey) : scheme(scheme), secretKey(secretKey) {}
-
+        TrainSVM(long dims, long numIters);
+        Scheme scheme;
+        SecretKey secretKey;
+        Context context;
+        long dim, numIter,slots, batch, pBits;
+        CipherSVM cipherSVM;
+        //resulting vector
+        Ciphertext encValw;
+        
         long suggestLogN(long lambda, long logQ);
-
-        void trainEncLGD(double* zDataTrain, long dim, long numIter, double lr);
-        void decAData(double* AData, Ciphertext encAData,long wBits);
+Scheme& 
+        //id trainEncLGD(double* zDataTrain, long dim, long numIter, double lr);
+        void decAlong dims, long numItersertext encAData,long wBits);
         //static void testEncLGD(double* zDataTest, bool isFirst,);
     
     

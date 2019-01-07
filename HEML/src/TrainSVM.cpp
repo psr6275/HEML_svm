@@ -20,7 +20,39 @@
 4. expandable code for split matrix storage!
     Now, we just suppose that the matrix is not that big and
     can be stored in a ciphertext. */
+// Define the constructor for TrainSVM class
+// The problem is that determining parameters requires number of data and factors
+TrainSVM::TrainSVM(long dims, long numIters){
+	dim = dims;
+	numIter = numIters;
 
+	long wBits = 30;
+	pBits = 20;
+	long lBits = 5;
+	long aBits = 3;
+	long dimBits =(long)ceil(log2(dim)); 
+	long logQ = (dimBits + wBits + lBits) + numIter * ((3 + 1) * wBits + 2 * 3 + aBits);
+    long logN = TrainSVM::suggestLogN(80, logQ);
+	long bBits = dimBits;
+	batch = 1 << bBits;    
+	long sBits = dimBits + bBits;
+	slots =  1 << sBits;
+    cout << dim << "batch = " << batch << ", slots = " << slots  << endl;
+
+	cout << "HEAAN PARAMETER logQ: " << logQ << endl;
+	cout << "HEAAN PARAMETER logN: " << logN << endl;
+
+	TimeUtils timeutils;
+	timeutils.start("Scheme generating...");
+	context(logN, logQ);
+	secretKey(logN);
+    scheme(secretKey, context);
+	scheme.addLeftRotKeys(secretKey);
+	scheme.addRightRotKeys(secretKey);
+	timeutils.stop("Scheme generation");
+	//initialize cipherSVM: it should be shared.
+	cipherSVM(scheme, secretKey);
+}
 long TrainSVM::suggestLogN(long lambda, long logQ){
     long NBnd = ceil(logQ * (lambda +110) /3.6);
     double logNBnd = log2((double)NBnd);
@@ -41,38 +73,7 @@ void TrainSVM::trainEncLGD(double* zDataTrain, long dim, long numIter, double lr
     }//horizontal copy generation
 
     //Set parameters and create scheme
-    long wBits = 30;
-    long pBits = 20;
-    long lBits = 5;
-    long aBits = 3;
-    //not determine the parameters yet
     
-    long sampleDim = dim, factorDim = dim;
-    long kdeg = 3;
-    long fdimBits = (long)ceil(log2(factorDim));
-	long sdimBits = (long)ceil(log2(sampleDim));
-    long kBits = (long)ceil(log2(kdeg));
-
-    long logQ = (sdimBits + wBits + lBits) + numIter * ((kBits + 1) * wBits + 2 * pBits + aBits);
-    long logN = TrainSVM::suggestLogN(80, logQ);
-	long bBits = fdimBits;
-	long batch = 1 << bBits;    
-	long sBits = sdimBits + bBits;
-	long slots =  1 << sBits;
-    cout << dim << "batch = " << batch << ", slots = " << slots  << endl;
-
-	cout << "HEAAN PARAMETER logQ: " << logQ << endl;
-	cout << "HEAAN PARAMETER logN: " << logN << endl;
-
-    TimeUtils timeutils;
-	timeutils.start("Scheme generating...");
-	Context context(logN, logQ);
-	SecretKey secretKey(logN);
-        Scheme scheme(secretKey, context);
-	scheme.addLeftRotKeys(secretKey);
-	scheme.addRightRotKeys(secretKey);
-	timeutils.stop("Scheme generation");
-	CipherSVM cipherSVM(scheme, secretKey);
 
 	timeutils.start("Polynomial generating...");
 	ZZX poly = cipherSVM.generateAuxPoly(slots, batch, pBits);  //masking matrix - 1st column만 1, 나머지 0 생성
@@ -113,7 +114,7 @@ void TrainSVM::trainEncLGD(double* zDataTrain, long dim, long numIter, double lr
         }
 	
 	//obtain [b,ay] for testing!
-	Ciphertext encValw = scheme.modDownTo(encZData, encWData.logq);
+	encValw = scheme.modDownTo(encZData, encWData.logq);
 	scheme.multAndEqual(encValw,encWData);
 	//comparing and testing the trained results here!
 	cout<<"end training"<<endl;
