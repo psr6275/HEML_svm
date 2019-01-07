@@ -3,7 +3,7 @@
 #include <Scheme.h>
 #include <SecretKey.h>
 #include <Ciphertext.h>
-#include "cipherSVM.h"
+#include "CipherSVM.h"
 
 #include <complex>
 
