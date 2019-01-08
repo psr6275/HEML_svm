@@ -13,12 +13,12 @@ using namespace NTL;
 class TrainSVM{
     public:
         TrainSVM(long dims, long numIters);
-        Scheme scheme;
-        SecretKey secretKey;
-        Context context;
+        Scheme& scheme;
+        SecretKey& secretKey;
+        Context& context;
         long dim, numIter,slots, batch, pBits,wBits,bBits;
         long logQ;
-        CipherSVM cipherSVM;
+        CipherSVM& cipherSVM;
         //resulting vector
         Ciphertext encValw;
         
