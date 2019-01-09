@@ -47,11 +47,11 @@ TrainSVM::TrainSVM(long dims, long numIters){
 	context = new Context(logN, logQ);
 	secretKey = new SecretKey(logN);
     scheme = new Scheme(*secretKey, *context);
-	(*scheme).addLeftRotKeys(secretKey);
-	(*scheme).addRightRotKeys(secretKey);
+	scheme->addLeftRotKeys(*secretKey);
+	scheme->addRightRotKeys(*secretKey);
 	timeutils.stop("Scheme generation");
 	//initialize cipherSVM: it should be shared.
-	cipherSVM = new CipherGD(*scheme, *secretKey);
+	cipherSVM = new CipherSVM(*scheme, *secretKey);
 }
 long TrainSVM::suggestLogN(long lambda, long logQ){
     long NBnd = ceil(logQ * (lambda +110) /3.6);
@@ -126,7 +126,7 @@ void TrainSVM::trainEncLGD(double* zDataTrain, double lr){
 	cout<<"resulting cwt vector"<<cwtData<<endl;
 	
 	
-void trainSVM::decAData(double* AData, Ciphertext encAData){
+void TrainSVM::decAData(double* AData, Ciphertext encAData){
 	complex<double>* AData = scheme->decrypt(*secretKey,encAData);
 }
 
