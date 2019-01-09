@@ -29,7 +29,7 @@ TrainSVM::TrainSVM(long dims, long numIters){
 	wBits = 30;
 	pBits = 20;
 	long lBits = 5;
-	long aBits = 3;
+	aBits = 3;
 	long dimBits =(long)ceil(log2(dim)); 
 	logQ = (dimBits + wBits + lBits) + numIter * ((3 + 1) * wBits + 2 * 3 + aBits);
     long logN = TrainSVM::suggestLogN(80, logQ);

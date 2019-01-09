@@ -17,7 +17,7 @@ class TrainSVM{
         SecretKey& secretKey;
         Context& context;
         long dim, numIter,slots, batch, pBits,wBits,bBits;
-        long logQ;
+        long logQ, aBits;
         CipherSVM& cipherSVM;
         //resulting vector
         Ciphertext encValw;
