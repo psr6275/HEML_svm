@@ -46,12 +46,12 @@ TrainSVM::TrainSVM(long dims, long numIters){
 	timeutils.start("Scheme generating...");
 	context = new Context(logN, logQ);
 	secretKey = new SecretKey(logN);
-    scheme = new Scheme(&secretKey, &context);
-	scheme.addLeftRotKeys(secretKey);
-	scheme.addRightRotKeys(secretKey);
+    scheme = new Scheme(*secretKey, *context);
+	(*scheme).addLeftRotKeys(secretKey);
+	(*scheme).addRightRotKeys(secretKey);
 	timeutils.stop("Scheme generation");
 	//initialize cipherSVM: it should be shared.
-	cipherSVM = new CipherGD(scheme, secretKey);
+	cipherSVM = new CipherGD(*scheme, *secretKey);
 }
 long TrainSVM::suggestLogN(long lambda, long logQ){
     long NBnd = ceil(logQ * (lambda +110) /3.6);
@@ -79,8 +79,8 @@ void TrainSVM::trainEncLGD(double* zDataTrain, double lr){
     
 
 	timeutils.start("Polynomial generating...");
-	ZZX poly = cipherSVM.generateAuxPoly(slots, batch, pBits);  //masking matrix - 1st column만 1, 나머지 0 생성
-	ZZX poly2 = cipherSVM.generateAuxPoly2(slots, batch, pBits); //masking matrix - 1st row만 1, 나머지 0 생성
+	ZZX poly = cipherSVM->generateAuxPoly(slots, batch, pBits);  //masking matrix - 1st column만 1, 나머지 0 생성
+	ZZX poly2 = cipherSVM->generateAuxPoly2(slots, batch, pBits); //masking matrix - 1st row만 1, 나머지 0 생성
 
 	timeutils.stop("Polynomial generation");
 
@@ -91,15 +91,15 @@ void TrainSVM::trainEncLGD(double* zDataTrain, double lr){
 
 
 	timeutils.start("Encrypting Data...");
-	encZData = scheme.encrypt(zDataTrain, slots, wBits, logQ);
-	encWData = scheme.encrypt(wData, slots, wBits, logQ);
+	encZData = scheme->encrypt(zDataTrain, slots, wBits, logQ);
+	encWData = scheme->encrypt(wData, slots, wBits, logQ);
 
 	timeutils.stop("Data encryption");
 
 	timeutils.start("Precomputing");
-	Ciphertext AbV= cipherSVM.GenAbVertical(encZData, poly2, bBits, wBits, pBits, slots) ; //각 column이 Ab인 행렬 생성
-	Ciphertext AbH= cipherSVM.GenAbHorzon(encZData, poly, bBits, wBits, pBits, slots) ; //각 Row가 Ab인 행렬 생성
-	Ciphertext AtA= cipherSVM.GenAtA(encZData, poly, poly2, bBits, wBits, pBits, batch, slots) ; //각 AtA 행렬 생성
+	Ciphertext AbV= cipherSVM->GenAbVertical(encZData, poly2, bBits, wBits, pBits, slots) ; //각 column이 Ab인 행렬 생성
+	Ciphertext AbH= cipherSVM->GenAbHorzon(encZData, poly, bBits, wBits, pBits, slots) ; //각 Row가 Ab인 행렬 생성
+	Ciphertext AtA= cipherSVM->GenAtA(encZData, poly, poly2, bBits, wBits, pBits, batch, slots) ; //각 AtA 행렬 생성
 
 	timeutils.stop("Precomputing Done");
 
@@ -110,15 +110,15 @@ void TrainSVM::trainEncLGD(double* zDataTrain, double lr){
         cout << " !!! START " << iter + 1 << " ITERATION !!! " << endl;
 		cout<<"encWData.logq before: "<< encWData.logq <<endl;
         timeutils.start("Enc LGD");
-        cipherSVM.encLGDiteration(AtA,AbV,AbH,encWData,poly,poly2,lr,sBits,bBits,wBits,pBits,aBits);
+        cipherSVM->encLGDiteration(AtA,AbV,AbH,encWData,poly,poly2,lr,sBits,bBits,wBits,pBits,aBits);
         timeutils.stop("Enc LGD");
         cout << "encWData.logq after: " << encWData.logq << endl;
         //learning 이 잘 되었는지는 어차피 Decrypt된 상태에서 하네... 일단 얘 먼저 test 해야할듯 
         }
 	
 	//obtain [b,ay] for testing!
-	encValw = scheme.modDownTo(encZData, encWData.logq);
-	scheme.multAndEqual(encValw,encWData);
+	encValw = scheme->modDownTo(encZData, encWData.logq);
+	scheme->multAndEqual(encValw,encWData);
 	//comparing and testing the trained results here!
 	//decrypt the trained vector
 	TrainSVM::decAData(cwtData,encValw);
@@ -127,7 +127,7 @@ void TrainSVM::trainEncLGD(double* zDataTrain, double lr){
 	
 	
 void trainSVM::decAData(double* AData, Ciphertext encAData){
-	complex<double>* AData = scheme.decrypt(secretKey,encAData);
+	complex<double>* AData = scheme->decrypt(*secretKey,encAData);
 }
 
 

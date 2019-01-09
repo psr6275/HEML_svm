@@ -16,10 +16,10 @@ class TrainSVM{
         
         long dim, numIter,slots, batch,sBits, pBits,wBits,bBits;
         long logQ, aBits,logN;
-        Context& context;
-        SecretKey& secretKey;
-        Scheme& scheme;
-        CipherSVM& cipherSVM;
+        Context* context;
+        SecretKey* secretKey;
+        Scheme* scheme;
+        CipherSVM* cipherSVM;
         //resulting vector
         Ciphertext encValw;
         
