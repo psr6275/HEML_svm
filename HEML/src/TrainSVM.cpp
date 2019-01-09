@@ -127,7 +127,8 @@ void TrainSVM::trainEncLGD(double* zDataTrain, double lr){
 	
 }	
 void TrainSVM::decAData(double* AData, Ciphertext encAData){
-	AData = (scheme->decrypt(*secretKey,encAData)).real();
+ 
+	AData = (scheme->decrypt(*secretKey,encAData))->real();
 }
 
 
