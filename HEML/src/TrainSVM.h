@@ -4,6 +4,7 @@
 #include <SecretKey.h>
 #include <Ciphertext.h>
 #include "CipherSVM.h"
+#include "TimeUtils.h"
 
 #include <complex>
 
@@ -20,6 +21,7 @@ class TrainSVM{
         SecretKey* secretKey;
         Scheme* scheme;
         CipherSVM* cipherSVM;
+        TimeUtils timeutils;
         //resulting vector
         Ciphertext encValw;
         

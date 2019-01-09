@@ -42,7 +42,7 @@ TrainSVM::TrainSVM(long dims, long numIters){
 	cout << "HEAAN PARAMETER logQ: " << logQ << endl;
 	cout << "HEAAN PARAMETER logN: " << logN << endl;
 
-	TimeUtils timeutils;
+	//TimeUtils timeutils;
 	timeutils.start("Scheme generating...");
 	context = new Context(logN, logQ);
 	secretKey = new SecretKey(logN);
