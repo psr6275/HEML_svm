@@ -14,7 +14,7 @@ class TrainSVM{
     public:
         TrainSVM(long dims, long numIters);
         
-        long dim, numIter,slots, batch, pBits,wBits,bBits;
+        long dim, numIter,slots, batch,sBits, pBits,wBits,bBits;
         long logQ, aBits,logN;
         Context context(long logN,long logQ);
         SecretKey secretKey(long logN);
@@ -24,7 +24,6 @@ class TrainSVM{
         Ciphertext encValw;
         
         long suggestLogN(long lambda, long logQ);
-Scheme& 
         void trainEncLGD(double* zDataTrain, double lr);
         void decAData(double* AData, Ciphertext encAData);
         //static void testEncLGD(double* zDataTest, bool isFirst,);
