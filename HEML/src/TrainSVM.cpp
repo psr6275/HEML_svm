@@ -46,7 +46,7 @@ TrainSVM::TrainSVM(long dims, long numIters){
 	timeutils.start("Scheme generating...");
 	context = new Context(logN, logQ);
 	secretKey = new SecretKey(logN);
-    scheme = new Scheme(secretKey, context);
+    scheme = new Scheme(&secretKey, &context);
 	scheme.addLeftRotKeys(secretKey);
 	scheme.addRightRotKeys(secretKey);
 	timeutils.stop("Scheme generation");
