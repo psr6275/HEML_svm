@@ -125,7 +125,7 @@ void TrainSVM::trainEncLGD(double* zDataTrain, double lr){
 	cout<<"end training"<<endl;
 	cout<<"resulting cwt vector"<<cwtData<<endl;
 	
-	
+}	
 void TrainSVM::decAData(double* AData, Ciphertext encAData){
 	complex<double>* AData = scheme->decrypt(*secretKey,encAData);
 }
@@ -163,4 +163,4 @@ void TrainSVM::decAData(double* AData, Ciphertext encAData){
 	
 
 
-}
+
