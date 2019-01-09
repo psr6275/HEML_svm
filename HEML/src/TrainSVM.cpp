@@ -44,14 +44,14 @@ TrainSVM::TrainSVM(long dims, long numIters){
 
 	TimeUtils timeutils;
 	timeutils.start("Scheme generating...");
-	context(logN, logQ);
-	secretKey(logN);
-    scheme(secretKey, context);
+	context = new Context(logN, logQ);
+	secretKey = new SecretKey(logN);
+    scheme = new Scheme(secretKey, context);
 	scheme.addLeftRotKeys(secretKey);
 	scheme.addRightRotKeys(secretKey);
 	timeutils.stop("Scheme generation");
 	//initialize cipherSVM: it should be shared.
-	cipherSVM(scheme, secretKey);
+	cipherSVM = new CipherGD(scheme, secretKey);
 }
 long TrainSVM::suggestLogN(long lambda, long logQ){
     long NBnd = ceil(logQ * (lambda +110) /3.6);
