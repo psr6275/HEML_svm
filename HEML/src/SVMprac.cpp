@@ -81,7 +81,7 @@ int main(int argc, char **argv){
     double* zeData = zDataFromFileFullA(trainfile, factorDim, sampleDim, dim);
     cout<<"Start to training procedure!"<<endl;
 	TrainSVM trainSVM(dim,numIter);
-    TrainSVM.trainEncLGD(zeData, lr);
+    trainSVM.trainEncLGD(zeData, lr);
 
     return 0;
     
