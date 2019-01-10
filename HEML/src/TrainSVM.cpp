@@ -123,7 +123,7 @@ void TrainSVM::trainEncLGD(double* zDataTrain, double lr){
 	encValw = scheme->modDownTo(encZData, encWData.logq);
 	scheme->multAndEqual(encValw,encWData);
 	//trained enc w data and decrypted w data
-	scheme->multByPolyAndEqual(encWData,poly2);
+	//scheme->multByPolyAndEqual(encWData,poly2,pBits);
 	TrainSVM::decAData(cwtData,encWData);
 	
 	//comparing and testing the trained results here!
