@@ -16,14 +16,19 @@ class TrainSVM{
         TrainSVM(long dims, long numIters);
         
         long dim, numIter,slots, batch,sBits, pBits,wBits,bBits;
+        //dim is related to the number of data in this case.
         long logQ, aBits,logN;
         Context* context;
         SecretKey* secretKey;
         Scheme* scheme;
         CipherSVM* cipherSVM;
         TimeUtils timeutils;
-        //resulting vector
+        //resulting encrypted vector
         Ciphertext encValw;
+        Ciphertext encWData;
+        //resulting decrypted vector
+        double* cwtData; //w value
+        double* cwtVal; //f(x) value
         
         long suggestLogN(long lambda, long logQ);
         void trainEncLGD(double* zDataTrain, double lr);

@@ -73,7 +73,8 @@ void TrainSVM::trainEncLGD(double* zDataTrain, double lr){
     }//horizontal copy generation
 
 	//wtData after training
-	double* cwtData = new double[dim];
+	cwtData = new double[dim];
+	cwtVal = new double[dim];
 
     //Set parameters and create scheme
     
@@ -116,19 +117,32 @@ void TrainSVM::trainEncLGD(double* zDataTrain, double lr){
         //learning 이 잘 되었는지는 어차피 Decrypt된 상태에서 하네... 일단 얘 먼저 test 해야할듯 
         }
 	
+
+	
 	//obtain [b,ay] for testing!
 	encValw = scheme->modDownTo(encZData, encWData.logq);
 	scheme->multAndEqual(encValw,encWData);
+	//trained enc w data and decrypted w data
+	scheme->multByPolyAndEqual(encWData,poly2);
+	TrainSVM::decAData(cwtData,encWData);
+	
 	//comparing and testing the trained results here!
 	//decrypt the trained vector
-	TrainSVM::decAData(cwtData,encValw);
+	TrainSVM::decAData(cwtVal,encValw);
 	cout<<"end training"<<endl;
-	cout<<"resulting cwt vector"<<endl;
+	cout<<"resulting W vector"<<endl;
         for(long i=0; i <dim;++i){
         cout<<cwtData[i]<<", ";
         }
         cout<<endl;
+
+	cout<<"resulting f(x) vector"<<endl;
+        for(long i=0; i <dim;++i){
+        cout<<cwtVal[i]<<", ";
+        }
+        cout<<endl;
 }	
+//void TrainSVM::test
 void TrainSVM::decAData(double* AData, Ciphertext encAData){
 	complex<double>* dcw = scheme->decrypt(*secretKey,encAData);
 	for (long i = 0;i<dim;++i){
