@@ -65,7 +65,8 @@ void TrainSVM::trainEncLGD(double* zDataTrain, double lr){
     //initialize weights (wtData)
     double* wtData = new double[dim];
     for(long i=0;i<dim;i++){
-        wtData[i] = EvaluatorUtils::randomReal(1.0);
+        //wtData[i] = EvaluatorUtils::randomReal(1.0);
+		wtData[i] =0.0;
     }
     double* wData = new double[dim*dim];
     for(long j=0;j<dim*dim;j++){
