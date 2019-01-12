@@ -242,7 +242,7 @@ ZZX CipherSVM::generateAuxPoly2(long slots, long batch, long pBits) {
 	return msg;
 }
 
-void CipherSVM::encLGDstep(Ciphertext encWData, Ciphertext encGrad){
+void CipherSVM::encLGDstep(Ciphertext& encWData, Ciphertext& encGrad){
 	//NTL_EXEC_RANGE(cnum, first, last);
 	//for (long i = first; i < last; ++i) {
 	scheme.modDownToAndEqual(encWData, encGrad.logq);
@@ -250,7 +250,7 @@ void CipherSVM::encLGDstep(Ciphertext encWData, Ciphertext encGrad){
 	//}
 	//NTL_EXEC_RANGE_END;
 }
-void CipherSVM::encLGDiteration(Ciphertext encAtAData, Ciphertext encAbV, Ciphertext encAbH, Ciphertext encWData, ZZX& poly,ZZX& poly2, double gamma, long sBits, long bBits, long wBits, long pBits, long aBits) {
+void CipherSVM::encLGDiteration(Ciphertext& encAtAData, Ciphertext& encAbV, Ciphertext& encAbH, Ciphertext& encWData, ZZX& poly,ZZX& poly2, double gamma, long sBits, long bBits, long wBits, long pBits, long aBits) {
  	//Ciphertext* encGrad = new Ciphertext[cnum];
 	//Ciphertext encGrad 
 	//= new Ciphertext[cnum];	
@@ -269,7 +269,7 @@ void CipherSVM::encLGDiteration(Ciphertext encAtAData, Ciphertext encAbV, Cipher
 	
 	//delete[] encIP;//pointer가 아니어서 error???
 }
-void CipherSVM::decWData(double* wData, Ciphertext encWData, long wBits){}
+//void CipherSVM::decWData(double* wData, Ciphertext encWData, long wBits){}
 //////////////////////
 //////////////////////
 double* rawmult(double** zData, double* wtData, long dim){

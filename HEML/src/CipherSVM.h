@@ -33,9 +33,9 @@ public:
         Ciphertext encVerticalVecProduct(Ciphertext encZData, Ciphertext encWData,  ZZX& poly,  long bBits, long wBits, long pBits); 
 
         //for GD step and iteration
-        void encLGDstep(Ciphertext encWData, Ciphertext encGrad); 
-        void encLGDiteration(Ciphertext encAtAData,Ciphertext encAbV, Ciphertext encAbH, Ciphertext encWData, ZZX& poly, ZZX& poly2, double gamma, long sBits, long bBits, long wBits, long pBits, long aBits);
-        void decWData(double* wData, Ciphertext encWData, long wBits);
+        void encLGDstep(Ciphertext& encWData, Ciphertext& encGrad); 
+        void encLGDiteration(Ciphertext& encAtAData,Ciphertext& encAbV, Ciphertext& encAbH, Ciphertext& encWData, ZZX& poly, ZZX& poly2, double gamma, long sBits, long bBits, long wBits, long pBits, long aBits);
+        //void decWData(double* wData, Ciphertext encWData, long wBits);
 
 };
 #endif
