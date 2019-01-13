@@ -484,7 +484,8 @@ int main(int argc, char **argv) {
 	Ciphertext AbV= GenAbVertical(encZData, scheme, poly2, bBits, wBits, pBits, slots) ; //각 column이 Ab인 행렬 생성
 	Ciphertext AbH= GenAbHorzon(encZData, scheme, poly, bBits, wBits, pBits, slots) ; //각 Row가 Ab인 행렬 생성
 	Ciphertext AtA= GenAtA(encZData, scheme, poly, poly2, bBits, wBits, pBits, batch, slots) ; //각 AtA 행렬 생성
-
+                                             
+    
 	timeutils.stop("Precomputing Done");
 
 		cout << " !!! START ITERATION !!! " << endl;

@@ -74,8 +74,8 @@ int main(int argc, char **argv){
     SetNumThreads(8);
     const long dim=64;
     long factorDim = dim, sampleDim = dim;
-    long numIter = 3;
-    long lr = 0.1;
+    long numIter = 1;
+    double lr = 0.0;
     string trainfile(argv[1]);
     cout<<"Start to load data"<<endl;
     double* zeData = zDataFromFileFullA(trainfile, factorDim, sampleDim, dim);
