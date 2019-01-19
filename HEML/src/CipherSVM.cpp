@@ -68,6 +68,7 @@ void CipherSVM::encZData(Ciphertext* encZData, double** zData, long slots, long 
 */
 
 ///
+
 Ciphertext CipherSVM::GenAtA(Ciphertext encZData, ZZX& poly, ZZX& poly2, long bBits, long wBits, long pBits, long batch, long slots) {
 	
 	Ciphertext AtA = scheme.multByPoly(encZData, poly2, pBits);
@@ -242,10 +243,13 @@ ZZX CipherSVM::generateAuxPoly2(long slots, long batch, long pBits) {
 	return msg;
 }
 
-void CipherSVM::encLGDstep(Ciphertext& encWData, Ciphertext& encGrad){
+///// Shoudl add the function alternating the direction of padding.
+
+void CipherSVM::encLGDstep(Ciphertext& encWData, Ciphertext& encGrad, double lr){
 	//NTL_EXEC_RANGE(cnum, first, last);
 	//for (long i = first; i < last; ++i) {
 	scheme.modDownToAndEqual(encWData, encGrad.logq);
+	//should multiply learning rate to gradient!
 	scheme.subAndEqual(encWData, encGrad);
 	//}
 	//NTL_EXEC_RANGE_END;
@@ -258,14 +262,15 @@ void CipherSVM::encLGDiteration(Ciphertext& encAtAData, Ciphertext& encAbV, Ciph
 	// 위에 거 결과로 encAtAData와 encWData가 rescale 되지는 않는다.
 	scheme.modDownToAndEqual(encAbH,encIP.logq);
 	scheme.subAndEqual(encIP,encAbH);
-	encLGDstep(encWData, encIP); 
+	//should repadding the weight vector
+	encLGDstep(encWData, encIP,gamma); 
 
 	//scheme.reScaleByAndEqual(encAtAData,wBits);
 	//encHorizon...에서 먼저 modDown을 해 주고 시작
 	encIP = encHorizonVecProduct(encAtAData, encWData,  poly, bBits, wBits, pBits) ;
 	scheme.modDownToAndEqual(encAbV,encIP.logq);
 	scheme.subAndEqual(encIP,encAbV);
-	encLGDstep(encWData, encIP); 
+	encLGDstep(encWData, encIP,gamma); 
 	
 	//delete[] encIP;//pointer가 아니어서 error???
 }

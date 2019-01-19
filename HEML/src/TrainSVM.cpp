@@ -50,6 +50,9 @@ TrainSVM::TrainSVM(long dims, long numIters){
 	scheme->addLeftRotKeys(*secretKey);
 	scheme->addRightRotKeys(*secretKey);
 	timeutils.stop("Scheme generation");
+	/////////// should add the identiy matrix as the input of CipherSVM
+
+
 	//initialize cipherSVM: it should be shared.
 	cipherSVM = new CipherSVM(*scheme, *secretKey);
 }

@@ -14,9 +14,11 @@ class CipherSVM {
 public:
         Scheme& scheme;
         SecretKey& secretKey;
+        Ciphertext cipherI;
 
-        CipherSVM(Scheme& scheme, SecretKey& secretKey) : scheme(scheme), secretKey(secretKey) {}
-        
+        CipherSVM(Scheme& scheme, SecretKey& secretKey, Ciphertext cipherI) : scheme(scheme), secretKey(secretKey), cipherI(cipherI) {}
+        //CipherSVM(Scheme& scheme, SecretKey& secretKey);
+
         void encZData(Ciphertext encZData, double** zData, long slots, long factorDim, long sampleDim, long batch, long cnum, long wBits, long logQ);
         //the first row is 1
         ZZX generateAuxPoly(long slots, long batch, long pBits);
@@ -33,7 +35,7 @@ public:
         Ciphertext encVerticalVecProduct(Ciphertext encZData, Ciphertext encWData,  ZZX& poly,  long bBits, long wBits, long pBits); 
 
         //for GD step and iteration
-        void encLGDstep(Ciphertext& encWData, Ciphertext& encGrad); 
+        void encLGDstep(Ciphertext& encWData, Ciphertext& encGrad, double lr); 
         void encLGDiteration(Ciphertext& encAtAData,Ciphertext& encAbV, Ciphertext& encAbH, Ciphertext& encWData, ZZX& poly, ZZX& poly2, double gamma, long sBits, long bBits, long wBits, long pBits, long aBits);
         //void decWData(double* wData, Ciphertext encWData, long wBits);
 
