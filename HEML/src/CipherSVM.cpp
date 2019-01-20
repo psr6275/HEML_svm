@@ -207,7 +207,7 @@ Ciphertext CipherSVM::encHorizonVecProduct(Ciphertext encZData, Ciphertext encWD
 
 //poly2 V를 넣어야 한다.(poly: 1,1,1,...,1;0,0,0,...;)
 Ciphertext CipherSVM::encVerticalVecProduct(Ciphertext encZData, Ciphertext encWData, ZZX& poly,  long bBits, long wBits, long pBits) {
-	Ciphertext encIPveco;
+	Ciphertext encIPvec;
 	//encWData padding may be [w1,w1,w1,...;w2,w2,w2,...]
 		encIPvec = scheme.modDownTo(encZData, encWData.logq);
 		scheme.multAndEqual(encIPvec, encWData); // xy * w
@@ -252,7 +252,7 @@ ZZX CipherSVM::generateAuxPoly2(long slots, long batch, long pBits) {
 
 ///// Shoudl add the function alternating the direction of padding.
 
-void CipherSVM::encLGDstep(Ciphertext& encWData, Ciphertext& encGrad, double lr){
+void CipherSVM::encLGDstep(Ciphertext& encWData, Ciphertext& encGrad, double lr,long wBits){
 	//NTL_EXEC_RANGE(cnum, first, last);
 	//for (long i = first; i < last; ++i) {
 	
@@ -276,7 +276,7 @@ void CipherSVM::encLGDiteration(Ciphertext& encAtAData, Ciphertext& encAbV, Ciph
 	scheme.subAndEqual(encIP,encAbH);
 	encWData = encHorizonVecProduct(encIMat,encWData,poly,bBits,wBits,pBits);
 	//should repadding the weight vector
-	encLGDstep(encWData, encIP,gamma); 
+	encLGDstep(encWData, encIP,gamma,wBits); 
 
 	//scheme.reScaleByAndEqual(encAtAData,wBits);
 	//encHorizon...에서 먼저 modDown을 해 주고 시작
@@ -284,7 +284,7 @@ void CipherSVM::encLGDiteration(Ciphertext& encAtAData, Ciphertext& encAbV, Ciph
 	scheme.modDownToAndEqual(encAbV,encIP.logq);
 	scheme.subAndEqual(encIP,encAbV);
 	encWData = encVerticalVecProduct(encIMat,encWData,poly2,bBits,wBits,pBits);
-	encLGDstep(encWData, encIP,gamma); 
+	encLGDstep(encWData, encIP,gamma,wBits); 
 	
 	//delete[] encIP;//pointer가 아니어서 error???
 }
