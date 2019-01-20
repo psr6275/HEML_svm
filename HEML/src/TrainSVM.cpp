@@ -51,10 +51,18 @@ TrainSVM::TrainSVM(long dims, long numIters){
 	scheme->addRightRotKeys(*secretKey);
 	timeutils.stop("Scheme generation");
 	/////////// should add the identiy matrix as the input of CipherSVM
-
+	complex<double>* IMat = new complex<double>[slots];
+	for(long i = 0;i<slots;++i){
+		IMat[i].real(0.0)
+	}
+	for(long i=0;i<dim;++i){
+		IMat[i*bBits+i].real(1.0)
+	}
+	delete[] IMat;
+	Ciphertext encIMat = scheme->encrypt(IMat, slots,wBits,logQ);
 
 	//initialize cipherSVM: it should be shared.
-	cipherSVM = new CipherSVM(*scheme, *secretKey);
+	cipherSVM = new CipherSVM(*scheme, *secretKey, encIMat);
 }
 long TrainSVM::suggestLogN(long lambda, long logQ){
     long NBnd = ceil(logQ * (lambda +110) /3.6);
@@ -75,6 +83,7 @@ void TrainSVM::trainEncLGD(double* zDataTrain, double lr){
     for(long j=0;j<dim*dim;j++){
         wData[j] = wtData[j%dim];
     }//horizontal copy generation
+	//initial vector is represented as [v1,v2,...;v1,v2,...;v1,v2,...]
 
 	//wtData after training
 	cwtData = new double[dim];
@@ -149,6 +158,7 @@ void TrainSVM::trainEncLGD(double* zDataTrain, double lr){
 //void TrainSVM::test
 void TrainSVM::decAData(double* AData, Ciphertext encAData){
 	complex<double>* dcw = scheme->decrypt(*secretKey,encAData);
+	//dcw has "slot" number component
 	for (long i = 0;i<dim;++i){
 		AData[i] = dcw[i].real();
 	}

@@ -14,9 +14,9 @@ class CipherSVM {
 public:
         Scheme& scheme;
         SecretKey& secretKey;
-        Ciphertext cipherI;
+        Ciphertext encIMat;
 
-        CipherSVM(Scheme& scheme, SecretKey& secretKey, Ciphertext cipherI) : scheme(scheme), secretKey(secretKey), cipherI(cipherI) {}
+        CipherSVM(Scheme& scheme, SecretKey& secretKey, Ciphertext cipherI) : scheme(scheme), secretKey(secretKey), encIMat(cipherI) {}
         //CipherSVM(Scheme& scheme, SecretKey& secretKey);
 
         void encZData(Ciphertext encZData, double** zData, long slots, long factorDim, long sampleDim, long batch, long cnum, long wBits, long logQ);

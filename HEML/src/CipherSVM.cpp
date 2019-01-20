@@ -121,7 +121,7 @@ Ciphertext CipherSVM::GenAtA(Ciphertext encZData, ZZX& poly, ZZX& poly2, long bB
 
 
 Ciphertext CipherSVM::GenAbHorzon(Ciphertext encZData,  ZZX& poly, long bBits, long wBits, long pBits, long slots) {
-	
+//reesults is [v1,0,...;v2,0,...;...]	
 	Ciphertext encIPvec=encZData;
 				cout << "AbH" << endl;
 
@@ -147,10 +147,11 @@ Ciphertext CipherSVM::GenAbHorzon(Ciphertext encZData,  ZZX& poly, long bBits, l
 		scheme.addAndEqual(encIPvec, tmp);
 	}
 	return encIPvec;
+	//the result is [v1,v1,...,v1;v2,v2,...,v2;...]
 }
 
 Ciphertext CipherSVM::GenAbVertical(Ciphertext encZData,  ZZX& poly, long bBits, long wBits, long pBits, long slots) {
-		
+	//results is [v1,v2,v3,...;0,0,...]	
 	Ciphertext encIPvec=encZData;
 
 		complex<double>* pvals = new complex<double>[slots];
@@ -183,13 +184,14 @@ Ciphertext CipherSVM::GenAbVertical(Ciphertext encZData,  ZZX& poly, long bBits,
 //여기에서의 matrix * vector 연산은 반드시 matrix가 symmetric이여야지 reasonable! maybe...
 Ciphertext CipherSVM::encHorizonVecProduct(Ciphertext encZData, Ciphertext encWData, ZZX& poly, long bBits, long wBits, long pBits) {
 	Ciphertext encIPvec;
+	//original encWData padding should be [w1,w2,...;w1,w2,...]
 		encIPvec = scheme.modDownTo(encZData, encWData.logq);
 		scheme.multAndEqual(encIPvec, encWData); // xy * w
 		for (long l = 0; l < bBits; ++l) {
 			Ciphertext rot = scheme.leftRotateByPo2(encIPvec, l);
 			scheme.addAndEqual(encIPvec, rot);
 		}
-	
+	//the result is c = [c1,x,x,...;c2,x,x,...;c3,x,x,...;...]
 	
 
 	scheme.reScaleByAndEqual(encIPvec, wBits);
@@ -200,11 +202,13 @@ Ciphertext CipherSVM::encHorizonVecProduct(Ciphertext encZData, Ciphertext encWD
 		scheme.addAndEqual(encIPvec, tmp);
 	}
 	return encIPvec;
+	//the result is represented as [v1,v1,v1,..;v2,v2,v2,...]
 }
 
-//poly V를 넣어야 한다.
+//poly2 V를 넣어야 한다.(poly: 1,1,1,...,1;0,0,0,...;)
 Ciphertext CipherSVM::encVerticalVecProduct(Ciphertext encZData, Ciphertext encWData, ZZX& poly,  long bBits, long wBits, long pBits) {
-	Ciphertext encIPvec;
+	Ciphertext encIPveco;
+	//encWData padding may be [w1,w1,w1,...;w2,w2,w2,...]
 		encIPvec = scheme.modDownTo(encZData, encWData.logq);
 		scheme.multAndEqual(encIPvec, encWData); // xy * w
 		for (long l = 0; l < bBits; ++l) {
@@ -212,7 +216,7 @@ Ciphertext CipherSVM::encVerticalVecProduct(Ciphertext encZData, Ciphertext encW
 			scheme.addAndEqual(encIPvec, rot);
 		}
 	
-	
+	//the result is c = [c1,c2,c3,...;x,x,x,...;...]
 
 	scheme.reScaleByAndEqual(encIPvec, wBits);
 	
@@ -221,10 +225,12 @@ Ciphertext CipherSVM::encVerticalVecProduct(Ciphertext encZData, Ciphertext encW
 		Ciphertext tmp = scheme.rightRotateByPo2(encIPvec, l+bBits);//parameter check
 		scheme.addAndEqual(encIPvec, tmp);
 	}
-	return encIPvec;
+	return encIPvec
+	;
 }
 
 ZZX CipherSVM::generateAuxPoly(long slots, long batch, long pBits) {
+	//poly is [1,0,0,...;1,0,0,...;...]
 	complex<double>* pvals = new complex<double>[slots];
 	for (long j = 0; j < slots; j += batch) {
 		pvals[j].real(1.0);
@@ -234,6 +240,7 @@ ZZX CipherSVM::generateAuxPoly(long slots, long batch, long pBits) {
 	return msg;
 }
 ZZX CipherSVM::generateAuxPoly2(long slots, long batch, long pBits) {
+	//poly2 is [1,1,1,...,1;0,0,...0;0,0,...]
 	complex<double>* pvals = new complex<double>[slots];
 	for (long j = 0; j < batch; j ++) {   //parameter check
 		pvals[j].real(1.0);
@@ -248,6 +255,9 @@ ZZX CipherSVM::generateAuxPoly2(long slots, long batch, long pBits) {
 void CipherSVM::encLGDstep(Ciphertext& encWData, Ciphertext& encGrad, double lr){
 	//NTL_EXEC_RANGE(cnum, first, last);
 	//for (long i = first; i < last; ++i) {
+	
+	scheme.multByConstAndEqual(encGrad,lr,wBits);
+	scheme.reScaleByAndEqual(encGrad,wBits);
 	scheme.modDownToAndEqual(encWData, encGrad.logq);
 	//should multiply learning rate to gradient!
 	scheme.subAndEqual(encWData, encGrad);
@@ -258,18 +268,22 @@ void CipherSVM::encLGDiteration(Ciphertext& encAtAData, Ciphertext& encAbV, Ciph
  	//Ciphertext* encGrad = new Ciphertext[cnum];
 	//Ciphertext encGrad 
 	//= new Ciphertext[cnum];	
-	Ciphertext encIP = encVerticalVecProduct(encAtAData, encWData,  poly2, bBits, wBits, pBits) ;
+	//initial Encw = [w1,w2,...;w1,w2,...;...]
+	Ciphertext encIP = encHorizonVecProduct(encAtAData, encWData,  poly, bBits, wBits, pBits) ;
+	//result is gw = [g1,g1,....,g1;g2,g2,....,g2;....]
 	// 위에 거 결과로 encAtAData와 encWData가 rescale 되지는 않는다.
 	scheme.modDownToAndEqual(encAbH,encIP.logq);
 	scheme.subAndEqual(encIP,encAbH);
+	encWData = encHorizonVecProduct(encIMat,encWData,poly,bBits,wBits,pBits);
 	//should repadding the weight vector
 	encLGDstep(encWData, encIP,gamma); 
 
 	//scheme.reScaleByAndEqual(encAtAData,wBits);
 	//encHorizon...에서 먼저 modDown을 해 주고 시작
-	encIP = encHorizonVecProduct(encAtAData, encWData,  poly, bBits, wBits, pBits) ;
+	encIP = encVerticalVecProduct(encAtAData, encWData,  poly2, bBits, wBits, pBits) ;
 	scheme.modDownToAndEqual(encAbV,encIP.logq);
 	scheme.subAndEqual(encIP,encAbV);
+	encWData = encVerticalVecProduct(encIMat,encWData,poly2,bBits,wBits,pBits);
 	encLGDstep(encWData, encIP,gamma); 
 	
 	//delete[] encIP;//pointer가 아니어서 error???
