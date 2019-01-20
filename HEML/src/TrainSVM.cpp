@@ -53,10 +53,10 @@ TrainSVM::TrainSVM(long dims, long numIters){
 	/////////// should add the identiy matrix as the input of CipherSVM
 	complex<double>* IMat = new complex<double>[slots];
 	for(long i = 0;i<slots;++i){
-		IMat[i].real(0.0)
+		IMat[i].real(0.0);
 	}
 	for(long i=0;i<dim;++i){
-		IMat[i*bBits+i].real(1.0)
+		IMat[i*bBits+i].real(1.0);
 	}
 	delete[] IMat;
 	Ciphertext encIMat = scheme->encrypt(IMat, slots,wBits,logQ);
