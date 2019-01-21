@@ -300,6 +300,35 @@ void CipherSVM::encLGDiteration(Ciphertext& encAtAData, Ciphertext& encAbV, Ciph
 	
 	//delete[] encIP;//pointer가 아니어서 error???
 }
+////////Enc Matrix should be obtained!!!!!!////////
+void CipherSVM::encMatrix(Ciphertext& encZData, double** zData, long dim, long slots, long batch, long wBits, long logQ){
+	complex<double>* pzData = new complex<double>[slots];
+	for (long i=0;i<dim;++i){
+		for (long j=0;j<dim;++j){
+			pzData[i*batch+j].real(zData[i][j]);
+		}
+	}
+	long rest = batch - dim;
+	for (long i = 0;i<dim;i++){
+		for(long j=dim;j<batch;j++){
+			pzData[i*batch+j] = 0;
+		}
+	}
+	for(long i = dim;i<batch;i++){
+		for(long j=0;j<batch;j++){
+			pzData[i*batch+j] = 0;
+		}
+	}
+
+	//print pzData
+	cout<<"print padded matrix!"<<endl;
+	for(long i = 0;i<slots;i++){
+		cout<<pzData[i].real()<<", ";
+	}
+	cout<<endl;
+	encZData = scheme.encrypt(pzData,slots,wBits,logQ);
+	delete[] pzData;
+}
 void CipherSVM::printDecCiphtxt(Ciphertext encData){
 	complex<double>* dcw = scheme.decrypt(secretKey,encData);
 	cout<<"Print ciphertxt but size 9->16"<<endl;

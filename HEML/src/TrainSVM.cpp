@@ -54,10 +54,10 @@ TrainSVM::TrainSVM(long dims, long numIters){
 	/////////// should add the identiy matrix as the input of CipherSVM
 	complex<double>* IMat = new complex<double>[slots];
 	for(long i = 0;i<slots;++i){
-		IMat[i].real(0.0);
+		IMat[i]=0;
 	}
 	for(long i=0;i<dim;++i){
-		IMat[i*bBits+i].real(1.0);
+		IMat[i*batch+i].real(1.0);
 	}
 	Ciphertext encIMat = scheme->encrypt(IMat, slots,wBits,logQ);
 	delete[] IMat;
@@ -69,19 +69,19 @@ long TrainSVM::suggestLogN(long lambda, long logQ){
     double logNBnd = log2((double)NBnd);
     return (long)ceil(logNBnd);
 }
-void TrainSVM::trainEncLGD(double* zDataTrain, double lr){
+void TrainSVM::trainEncLGD(double** zDataTrain, double lr){
     
     //zDataTrain is A matrix but neet to be vertorized! So, this shape is dim*dim.
     //dim is the number of columns or rows of A matrix!
     //initialize weights (wtData)
-    double* wtData = new double[dim];
-    for(long i=0;i<dim;i++){
+    double* wtData = new double[batch];
+    for(long i=0;i<batch;i++){
         //wtData[i] = EvaluatorUtils::randomReal(1.0);
 		wtData[i] =0.0;
     }
-    double* wData = new double[dim*dim];
-    for(long j=0;j<dim*dim;j++){
-        wData[j] = wtData[j%dim];
+    double* wData = new double[slots];
+    for(long j=0;j<slots;j++){
+        wData[j] = wtData[j%batch];
     }//horizontal copy generation
 	//initial vector is represented as [v1,v2,...;v1,v2,...;v1,v2,...]
 
@@ -105,7 +105,9 @@ void TrainSVM::trainEncLGD(double* zDataTrain, double lr){
 
 
 	timeutils.start("Encrypting Data...");
-	encZData = scheme->encrypt(zDataTrain, slots, wBits, logQ);
+	//need some separate function for this!
+	//encZData = scheme->encrypt(zDataTrain, slots, wBits, logQ);
+	cipherSVM->encMatrix(encZData,zDataTrain,dim,slots,batch,wBits,logQ);
 	encWData = scheme->encrypt(wData, slots, wBits, logQ);
 
 	timeutils.stop("Data encryption");

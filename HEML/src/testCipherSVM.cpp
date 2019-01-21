@@ -28,13 +28,13 @@ using namespace NTL;
 * we read the number of instance automatically!
 * we also read the original training and test matrix!
 */
-double* zDataFromFileFullA(string& path, long& factorDim, long& sampleDim, long dim) { 
-	double* zeData = new double[dim*dim];
+double** zDataFromFileFullA(string& path, long& factorDim, long& sampleDim, long dim) { 
+	double** zeData = new double[dim][dim];
 /*
  dim = 64
  sampleDim = 샘플 개수 (row 개수)
  factorDim = attribute 개수 (column 개수)
- */
+ *
 // test
 	sampleDim = 0;	
 	ifstream openFile(path.data());
@@ -99,16 +99,16 @@ int main(int argc, char **argv){
     long numIter = 1;
     double lr = 1.0;
     
-    double* zeData = new double[dim*dim];
-	zeData[0] = 2.0;
-	zeData[1] = 3.0;
-	zeData[2] = 1.0;
-	zeData[3] = 3.0;
-	zeData[4] = 0.0;
-	zeData[5] = 2.0;
-	zeData[6] = 1.0;
-	zeData[7] = 2.0;
-	zeData[8] = 2.0;
+    double** zeData = new double[dim][dim];
+	zeData[0][0] = 2.0;
+	zeData[0][1] = 3.0;
+	zeData[0][2] = 1.0;
+	zeData[1][0] = 3.0;
+	zeData[1][1] = 0.0;
+	zeData[1][2] = 2.0;
+	zeData[2][0] = 1.0;
+	zeData[2][1] = 2.0;
+	zeData[2][2] = 2.0;
     //Add generate Scheme;
     long wBits = 30;
     long pBits = 20;
@@ -131,7 +131,7 @@ int main(int argc, char **argv){
         IMat[i].real(0.0);
     }
     for(long i =0;i<dim;++i){
-        IMat[i*bBits+i].real(1.0);
+        IMat[i*batch+i].real(1.0);
     }
     cout<<"Print IMat"<<endl;
     for (long i=0;i<slots;i++){
