@@ -257,10 +257,14 @@ void CipherSVM::encLGDstep(Ciphertext& encWData, Ciphertext& encGrad, double lr,
 	//for (long i = first; i < last; ++i) {
 	
 	scheme.multByConstAndEqual(encGrad,lr,wBits);
+	cout<<"Print lr*grad"<<endl;
+	CipherSVM::printDecCiphtxt(encGrad);
 	scheme.reScaleByAndEqual(encGrad,wBits);
 	scheme.modDownToAndEqual(encWData, encGrad.logq);
 	//should multiply learning rate to gradient!
 	scheme.subAndEqual(encWData, encGrad);
+	cout<<"Print W-lr*grad"<<endl;
+	CipherSVM::printDecCiphtxt(encWData);
 	//}
 	//NTL_EXEC_RANGE_END;
 }
@@ -268,13 +272,21 @@ void CipherSVM::encLGDiteration(Ciphertext& encAtAData, Ciphertext& encAbV, Ciph
  	//Ciphertext* encGrad = new Ciphertext[cnum];
 	//Ciphertext encGrad 
 	//= new Ciphertext[cnum];	
+	cout<<"Initial W"<<endl;
+	CipherSVM::printDecCiphtxt(encWData);
 	//initial Encw = [w1,w2,...;w1,w2,...;...]
 	Ciphertext encIP = encHorizonVecProduct(encAtAData, encWData,  poly, bBits, wBits, pBits) ;
 	//result is gw = [g1,g1,....,g1;g2,g2,....,g2;....]
+	cout<<"Print AtA*W"<<endl;
+	CipherSVM::printDecCiphtxt(encIP);
 	// 위에 거 결과로 encAtAData와 encWData가 rescale 되지는 않는다.
 	scheme.modDownToAndEqual(encAbH,encIP.logq);
 	scheme.subAndEqual(encIP,encAbH);
+	cout<<"Print AtA*W-Atb"<<endl;
+	CipherSVM::printDecCiphtxt(encIP);
 	encWData = encHorizonVecProduct(encIMat,encWData,poly,bBits,wBits,pBits);
+	cout<<"repadded W"<<endl;
+	CipherSVM::printDecCiphtxt(encWData);
 	//should repadding the weight vector
 	encLGDstep(encWData, encIP,gamma,wBits); 
 
@@ -287,6 +299,14 @@ void CipherSVM::encLGDiteration(Ciphertext& encAtAData, Ciphertext& encAbV, Ciph
 	encLGDstep(encWData, encIP,gamma,wBits); 
 	
 	//delete[] encIP;//pointer가 아니어서 error???
+}
+void CipherSVM::printDecCiphtxt(Ciphertext encData){
+	complex<double>* dcw = scheme.decrypt(secretKey,encData);
+	cout<<"Print ciphertxt but size 9->16"<<endl;
+	for (long i = 0;i<16;++i){
+		cout<<dcw[i].real()<<", ";
+	}
+	cout<<endl;
 }
 //void CipherSVM::decWData(double* wData, Ciphertext encWData, long wBits){}
 //////////////////////

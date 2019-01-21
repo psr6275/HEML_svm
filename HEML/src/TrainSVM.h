@@ -33,6 +33,7 @@ class TrainSVM{
         long suggestLogN(long lambda, long logQ);
         void trainEncLGD(double* zDataTrain, double lr);
         void decAData(double* AData, Ciphertext encAData);
+        void printDecCiphtxt(Ciphertext encData);
         //static void testEncLGD(double* zDataTest, bool isFirst,);
     
     

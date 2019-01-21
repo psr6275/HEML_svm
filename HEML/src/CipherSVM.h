@@ -38,6 +38,7 @@ public:
         void encLGDstep(Ciphertext& encWData, Ciphertext& encGrad, double lr,long wBits); 
         void encLGDiteration(Ciphertext& encAtAData,Ciphertext& encAbV, Ciphertext& encAbH, Ciphertext& encWData, ZZX& poly, ZZX& poly2, double gamma, long sBits, long bBits, long wBits, long pBits, long aBits);
         //void decWData(double* wData, Ciphertext encWData, long wBits);
+        void printDecCiphtxt(Ciphertext encData);
 
 };
 #endif

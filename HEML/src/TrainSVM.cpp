@@ -116,6 +116,13 @@ void TrainSVM::trainEncLGD(double* zDataTrain, double lr){
 	Ciphertext AtA= cipherSVM->GenAtA(encZData, poly, poly2, bBits, wBits, pBits, batch, slots) ; //각 AtA 행렬 생성
 
 	timeutils.stop("Precomputing Done");
+	cout<<"precomputation results!"<<endl;
+	cout<<"First is AtA"<<endl;
+	TrainSVM::printDecCiphtxt(AtA);
+	cout<<"Second is AbV"<<endl;
+	TrainSVM::printDecCiphtxt(AbV);
+	cout<<"Last is AbH"<<endl;
+	TrainSVM::printDecCiphtxt(AbH);
 
 	cout << " !!! START ITERATION !!! " << endl;
 		
@@ -125,7 +132,8 @@ void TrainSVM::trainEncLGD(double* zDataTrain, double lr){
 		cout<<"encWData.logq before: "<< encWData.logq <<endl;
         timeutils.start("Enc LGD");
         cipherSVM->encLGDiteration(AtA,AbV,AbH,encWData,poly,poly2,lr,sBits,bBits,wBits,pBits,aBits);
-        timeutils.stop("Enc LGD");
+        
+		timeutils.stop("Enc LGD");
         cout << "encWData.logq after: " << encWData.logq << endl;
         //learning 이 잘 되었는지는 어차피 Decrypt된 상태에서 하네... 일단 얘 먼저 test 해야할듯 
         }
@@ -163,6 +171,13 @@ void TrainSVM::decAData(double* AData, Ciphertext encAData){
 		AData[i] = dcw[i].real();
 	}
 	
+}
+void TrainSVM::printDecCiphtxt(Ciphertext encData){
+	complex<double>* dcw = scheme->decrypt(*secretKey,encData);
+	for (long i=0; i<slots;++i){
+		cout<<dcw[i].real()<<", ";
+	}
+	cout<<endl;
 }
 
 

@@ -86,11 +86,33 @@ int main(int argc, char **argv){
     trainSVM.trainEncLGD(zeData, lr);
     */
     //Test and Debugging
-    const long dim=4;
+    const long dim=3;
     long factorDim = dim,sampleDim = dim;
     long numIter = 1;
     double lr = 1.0;
-    double* zeData
+    double* zeData = new double[dim*dim];
+	zeData[0] = 2.0;
+	zeData[1] = 3.0;
+	zeData[2] = 1.0;
+	zeData[3] = 3.0;
+	zeData[4] = 0.0;
+	zeData[5] = 2.0;
+	zeData[6] = 1.0;
+	zeData[7] = 2.0;
+	zeData[8] = 2.0;
+	TrainSVM trainSVM(dim,numIter);
+	trainSVM.trainEncLGD(zeData,lr);
+	/*
+	for (i =0;i<dim;++i){
+		for(j=0;j<i;++j){
+			zeData[i*dim+j] = zeData[j*dim+i];
+		}
+		for(j=i;j<dim;++j){
+			zeData[i*dim+j] = EvaluatorUtils::randomReal(3.0);
+
+		}
+	}
+	*/
     return 0;
     
 }
