@@ -71,18 +71,26 @@ double* zDataFromFileFullA(string& path, long& factorDim, long& sampleDim, long 
 
 int main(int argc, char **argv){
     
+
     SetNumThreads(8);
+    /*
     const long dim=64;
     long factorDim = dim, sampleDim = dim;
     long numIter = 1;
-    double lr = 0.0;
+    double lr = 1.0;
     string trainfile(argv[1]);
     cout<<"Start to load data"<<endl;
     double* zeData = zDataFromFileFullA(trainfile, factorDim, sampleDim, dim);
     cout<<"Start to training procedure!"<<endl;
 	TrainSVM trainSVM(dim,numIter);
     trainSVM.trainEncLGD(zeData, lr);
-
+    */
+    //Test and Debugging
+    const long dim=4;
+    long factorDim = dim,sampleDim = dim;
+    long numIter = 1;
+    double lr = 1.0;
+    double* zeData
     return 0;
     
 }
