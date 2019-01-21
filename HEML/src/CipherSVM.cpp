@@ -118,6 +118,23 @@ Ciphertext CipherSVM::GenAtA(Ciphertext encZData, ZZX& poly, ZZX& poly2, long bB
 
 	return AtA;
 }
+Ciphertext CipherSVM::GenEncAtA(Ciphertext encZData, ZZX& poly, ZZX& poly2, long bBits, long wBits, long pBits, long batch, long slots){
+	Ciphertext AtA,tmp,tmp2;
+	
+	for(long i=0;i<batch;++i){
+		tmp2 = scheme.rightRotate(encZData,batch*i);
+		tmp = scheme.multByPoly(tmp2,poly2,pBits);//[a1,a2,..,an,;0,0,0,...]
+		for(long l=0;l<bBits;++l){
+			Ciphertext rot = scheme.leftRotateByPo2(tmp,l+bBits);
+			scheme.addAndEqual(tmp,rot);
+		}
+		tmp2 = encHorizonVecProduct(encZData,tmp,poly,bBits,wBits,pBits);
+		tmp = scheme.multByPoly(tmp2,poly2,pBits);
+		tmp = scheme.rightRotate(tmp,batch*i);
+		scheme.addAndEqual(AtA,tmp);
+	}
+	return AtA;
+}
 
 
 Ciphertext CipherSVM::GenAbHorzon(Ciphertext encZData,  ZZX& poly, long bBits, long wBits, long pBits, long slots) {
