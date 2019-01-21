@@ -28,40 +28,51 @@ using namespace NTL;
 * we read the number of instance automatically!
 * we also read the original training and test matrix!
 */
-double** zDataFromFileFullA(string& path, long& factorDim, long& sampleDim, long dim) { 
-	double** zeData = new double[dim][dim];
+double** zDataFromFileFullA(string& path, long& factorDim, long& sampleDim) { 
+	//double** zeData = new double[dim][dim];
+        vector<vector<double>> zline;
 /*
  dim = 64
  sampleDim = 샘플 개수 (row 개수)
  factorDim = attribute 개수 (column 개수)
- *
+ */
 // test
+        //factorDim=1;
 	sampleDim = 0;	
 	ifstream openFile(path.data());
 	if(openFile.is_open()) {
 		string line, temp;
-		long i;
+		//getline(openFile,line);
+                long i;
 		size_t start, end;
 		while(getline(openFile, line)){
 	start=0;
-	long j=0;
+	//long j=0;
+        vector<double> vecline;
 
 			do {
 				end = line.find_first_of (',', start);
 				temp = line.substr(start,end);
-
-				zeData[sampleDim*dim+j]=atof(temp.c_str());
-				j++;
+                                vecline.push_back(atof(temp.c_str()));
+				//zeData[sampleDim][j]=atof(temp.c_str());
+				//j++;
 				start = end + 1;
 
 			} while(start);
-
+                        zline.push_back(vecline);
 			sampleDim++;
 
 		}
 	} else {
 		cout << "Error: cannot read file" << endl;
 	}
+        double** zeData = new double*[sampleDim];
+        for(long j=0;j<sampleDim;++j){
+            zeData[j] = new double[sampleDim];
+            for(long i=0;i<sampleDim;++i){
+                zeData[j][i] = zline[j][i];
+            }
+        }
 
 
 
@@ -99,7 +110,10 @@ int main(int argc, char **argv){
     long numIter = 1;
     double lr = 1.0;
     
-    double** zeData = new double[dim][dim];
+    double** zeData = new double*[dim];
+    for(int i =0;i<dim;++i){
+        zeData[i] = new double[dim];
+    }
 	zeData[0][0] = 2.0;
 	zeData[0][1] = 3.0;
 	zeData[0][2] = 1.0;
@@ -144,18 +158,23 @@ int main(int argc, char **argv){
     ZZX poly = cipherSVM.generateAuxPoly(slots,batch,pBits);
     ZZX poly2 = cipherSVM.generateAuxPoly2(slots,batch,pBits);
     Ciphertext encZData;
-    encZData = scheme.encrypt(zeData,slots,wBits,logQ);
+    cipherSVM.encMatrix(encZData,zeData,dim,slots,batch,wBits,logQ);
     cout<<"Print original zeData"<<endl;
-    for (long i =0;i<dim*dim;i++){
-            cout<<zeData[i]<<", ";
-                    }
+    for (long i =0;i<dim;i++){
+            for(long j=0;j<dim;j++){
+            cout<<zeData[i][j]<<", ";
+            }
+    }
     cout<<endl;
     cout<<"print ZData"<<endl;
     cipherSVM.printDecCiphtxt(encZData);
     delete[] IMat;
-    
-    TrainSVM trainSVM(dim,numIter);
-    trainSVM.trainEncLGD(zeData,lr);
+    Ciphertext encAtA;
+    encAtA = cipherSVM.GenAtA(encZData,poly,poly2,bBits,wBits,pBits,batch,slots);
+    cout<<"print AtA"<<endl;
+    cipherSVM.printDecCiphtxt(encAtA);
+    //TrainSVM trainSVM(dim,numIter);
+    //trainSVM.trainEncLGD(zeData,lr);
 	/*
 	for (i =0;i<dim;++i){
 		for(j=0;j<i;++j){

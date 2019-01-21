@@ -30,11 +30,11 @@ TrainSVM::TrainSVM(long dims, long numIters){
 	pBits = 20;
 	long lBits = 5;
 	aBits = 3;
+	long dimBits =(long)ceil(log2(dim)); 
         bBits = dimBits;
 	batch = 1 << bBits;    
 	long sBits = dimBits + bBits;
 
-	long dimBits =(long)ceil(log2(dim)); 
 	logQ = sBits*sBits+ (dimBits + wBits + lBits) + numIter * ((3 + 1) * wBits + 2 * 3 + aBits);
         long logN = TrainSVM::suggestLogN(80, logQ);
 	slots =  1 << sBits;
