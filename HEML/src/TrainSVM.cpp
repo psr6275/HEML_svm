@@ -58,9 +58,8 @@ TrainSVM::TrainSVM(long dims, long numIters){
 	for(long i=0;i<dim;++i){
 		IMat[i*bBits+i].real(1.0);
 	}
-	delete[] IMat;
 	Ciphertext encIMat = scheme->encrypt(IMat, slots,wBits,logQ);
-
+	delete[] IMat;
 	//initialize cipherSVM: it should be shared.
 	cipherSVM = new CipherSVM(*scheme, *secretKey, encIMat);
 }
