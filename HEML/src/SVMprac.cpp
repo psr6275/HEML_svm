@@ -90,7 +90,7 @@ int main(int argc, char **argv){
     long factorDim = dim,sampleDim = dim;
     long numIter = 1;
     double lr = 1.0;
-    double* zeData
+    double* zeData;
     return 0;
     
 }

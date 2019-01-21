@@ -100,8 +100,8 @@ int main(int argc, char **argv){
 	zeData[6] = 1.0;
 	zeData[7] = 2.0;
 	zeData[8] = 2.0;
-	TrainSVM trainSVM(dim,numIter);
-	trainSVM.trainEncLGD(zeData,lr);
+    TrainSVM trainSVM(dim,numIter);
+    trainSVM.trainEncLGD(zeData,lr);
 	/*
 	for (i =0;i<dim;++i){
 		for(j=0;j<i;++j){
