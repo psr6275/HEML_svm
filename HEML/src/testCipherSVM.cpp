@@ -170,7 +170,7 @@ int main(int argc, char **argv){
     cipherSVM.printDecCiphtxt(encZData);
     delete[] IMat;
     Ciphertext encAtA;
-    encAtA = cipherSVM.GenAtA(encZData,poly,poly2,bBits,wBits,pBits,batch,slots);
+    encAtA = cipherSVM.GenEncAtA(encZData,poly,poly2,bBits,wBits,pBits,batch,slots,logQ);
     cout<<"print AtA"<<endl;
     cipherSVM.printDecCiphtxt(encAtA);
     //TrainSVM trainSVM(dim,numIter);

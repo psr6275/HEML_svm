@@ -118,9 +118,14 @@ Ciphertext CipherSVM::GenAtA(Ciphertext encZData, ZZX& poly, ZZX& poly2, long bB
 
 	return AtA;
 }
-Ciphertext CipherSVM::GenEncAtA(Ciphertext encZData, ZZX& poly, ZZX& poly2, long bBits, long wBits, long pBits, long batch, long slots){
+Ciphertext CipherSVM::GenEncAtA(Ciphertext encZData, ZZX& poly, ZZX& poly2, long bBits, long wBits, long pBits, long batch, long slots,long logQ){
 	Ciphertext AtA,tmp,tmp2;
-	
+        double* zeros = new double[slots];
+        for(long i=0;i<slots;++i){
+            zeros[i] = 0;
+        }
+        AtA = scheme.encrypt(zeros,slots,wBits,logQ);
+
 	for(long i=0;i<batch;++i){
 		tmp2 = scheme.rightRotate(encZData,batch*i);
 		tmp = scheme.multByPoly(tmp2,poly2,pBits);//[a1,a2,..,an,;0,0,0,...]

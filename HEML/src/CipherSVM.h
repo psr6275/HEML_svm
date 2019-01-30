@@ -29,7 +29,7 @@ public:
         Ciphertext GenAtA(Ciphertext encZData,  ZZX& poly, ZZX& poly2, long bBits, long wBits, long pBits, long batch, long slots);
         Ciphertext GenAbHorzon(Ciphertext encZData,  ZZX& poly, long bBits, long wBits, long pBits, long slots);
         Ciphertext GenAbVertical(Ciphertext encZData,  ZZX& poly, long bBits, long wBits, long pBits, long slots);
-        Ciphertext GenEncAtA(Ciphertext encZData,ZZX& poly, ZZX& poly2, long bBits, long wBits, long pBits,long batch, long slots);
+        Ciphertext GenEncAtA(Ciphertext encZData,ZZX& poly, ZZX& poly2, long bBits, long wBits, long pBits,long batch, long slots,long logQ);
         //operations for GD step
         Ciphertext encHorizonVecProduct(Ciphertext encZData, Ciphertext encWData,  ZZX& poly, long bBits, long wBits, long pBits); 
         Ciphertext encVerticalVecProduct(Ciphertext encZData, Ciphertext encWData,  ZZX& poly,  long bBits, long wBits, long pBits); 
