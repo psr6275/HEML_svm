@@ -136,7 +136,10 @@ Ciphertext CipherSVM::GenEncAtA(Ciphertext encZData, ZZX& poly, ZZX& poly2, long
 		tmp2 = encHorizonVecProduct(encZData,tmp,poly,bBits,wBits,pBits);
 		tmp = scheme.multByPoly(tmp2,poly2,pBits);
 		tmp = scheme.rightRotate(tmp,batch*i);
+		cout<<"print tmp in GenEncAtA"<<endl;
+		printDecCiphtxt(tmp);
 		scheme.addAndEqual(AtA,tmp);
+		cout<<"print resulting AtA"<<endl;
 	}
 	return AtA;
 }
