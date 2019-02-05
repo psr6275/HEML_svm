@@ -125,6 +125,8 @@ Ciphertext CipherSVM::GenEncAtA(Ciphertext encZData, ZZX& poly, ZZX& poly2, long
             zeros[i] = 0;
         }
         AtA = scheme.encrypt(zeros,slots,wBits,logQ);
+        cout<<"initial AtA"<<endl;
+        printDecCiphtxt(AtA);
 
 	for(long i=0;i<batch;++i){
 		tmp2 = scheme.rightRotate(encZData,batch*i);
@@ -138,8 +140,10 @@ Ciphertext CipherSVM::GenEncAtA(Ciphertext encZData, ZZX& poly, ZZX& poly2, long
 		tmp = scheme.rightRotate(tmp,batch*i);
 		cout<<"print tmp in GenEncAtA"<<endl;
 		printDecCiphtxt(tmp);
+                scheme.modDownToAndEqual(AtA,tmp.logq);
 		scheme.addAndEqual(AtA,tmp);
 		cout<<"print resulting AtA"<<endl;
+                printDecCiphtxt(AtA);
 	}
 	return AtA;
 }
