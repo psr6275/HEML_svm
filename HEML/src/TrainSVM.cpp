@@ -115,7 +115,7 @@ void TrainSVM::trainEncLGD(double** zDataTrain, double lr){
 	timeutils.start("Precomputing");
 	Ciphertext AbV= cipherSVM->GenAbVertical(encZData, poly2, bBits, wBits, pBits, slots) ; //각 column이 Ab인 행렬 생성
 	Ciphertext AbH= cipherSVM->GenAbHorzon(encZData, poly, bBits, wBits, pBits, slots) ; //각 Row가 Ab인 행렬 생성
-	Ciphertext AtA= cipherSVM->GenAtA(encZData, poly, poly2, bBits, wBits, pBits, batch, slots) ; //각 AtA 행렬 생성
+	Ciphertext AtA= cipherSVM->GenEncAtA(encZData, poly, poly2, bBits, wBits, pBits, batch, slots,logQ) ; //각 AtA 행렬 생성
 
 	timeutils.stop("Precomputing Done");
 	cout<<"precomputation results!"<<endl;

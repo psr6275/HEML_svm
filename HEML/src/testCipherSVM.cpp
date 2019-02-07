@@ -154,7 +154,7 @@ int main(int argc, char **argv){
     cout<<endl;
     Ciphertext encIMat = scheme.encrypt(IMat,slots,wBits,logQ);
     CipherSVM cipherSVM(scheme,secretKey,encIMat);
-    cipherSVM.printDecCiphtxt(encIMat);
+    //cipherSVM.printDecCiphtxt(encIMat);
     ZZX poly = cipherSVM.generateAuxPoly(slots,batch,pBits);
     ZZX poly2 = cipherSVM.generateAuxPoly2(slots,batch,pBits);
     Ciphertext encZData;
@@ -166,27 +166,19 @@ int main(int argc, char **argv){
             }
     }
     cout<<endl;
-    cout<<"print ZData"<<endl;
-    cipherSVM.printDecCiphtxt(encZData);
+    //cout<<"print ZData"<<endl;
+    //cipherSVM.printDecCiphtxt(encZData);
     delete[] IMat;
+    
     Ciphertext encAtA;
     
-    //complex<double>* zeros = new complex<double>[slots];
-    //for(long i=0;i<slots;++i){
-    //        zeros[i].real(0.0);
-    //}
-
-    //encAtA = scheme.encrypt(zeros,slots,wBits,logQ);
-    //scheme.modDownToAndEqual(encAtA,370);
-    
-    //scheme.addAndEqual(encAtA,encAtA);
-    //encAtA = cipherSVM.GenAtA(encZData,poly,poly2,bBits,wBits,pBits,batch,slots);
     encAtA = cipherSVM.GenEncAtA(encZData,poly,poly2,bBits,wBits,pBits,batch,slots,logQ);
-    cout<<"print AtA"<<endl;
-    cipherSVM.printDecCiphtxt(encAtA);
+    //cout<<"print AtA"<<endl;
+    //cipherSVM.printDecCiphtxt(encAtA);
+    
     //TrainSVM trainSVM(dim,numIter);
     //trainSVM.trainEncLGD(zeData,lr);
-	/*
+        /*
 	for (i =0;i<dim;++i){
 		for(j=0;j<i;++j){
 			zeData[i*dim+j] = zeData[j*dim+i];

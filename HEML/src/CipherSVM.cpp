@@ -136,35 +136,42 @@ Ciphertext CipherSVM::GenEncAtA(Ciphertext encZData, ZZX& poly, ZZX& poly2, long
         //cout<<"print initial AtA.logq: "<<AtA.logq<<endl;
 
 	for(long i=0;i<batch;++i){
-		tmp = scheme.rightRotate(encZData,batch*i);
-		scheme.multByPolyAndEqual(tmp,poly2,pBits);//[a1,a2,..,an,;0,0,0,...]
-                /* 
+		tmp = scheme.leftRotate(encZData,i);
+                cout<<"print initial tmp"<<endl;
+                printDecCiphtxt(tmp);
+                //printDecCiphtxt(encZData);
+		scheme.multByPolyAndEqual(tmp,poly,pBits);//[a1,0,0;a2,0,0;a3,0,...]
+                 
                 cout<<"print tmp"<<endl;
                 printDecCiphtxt(tmp);
+                /*
                 scheme.modDownToAndEqual(AtA,tmp.logq);
                 cout<<"print AtA after add: "<<AtA.logq<<endl;
                 scheme.addAndEqual(AtA,tmp);
                 printDecCiphtxt(AtA);
                 */
 		for(long l=0;l<bBits;++l){
-			Ciphertext rot = scheme.leftRotateByPo2(tmp,l+bBits);
+			Ciphertext rot = scheme.rightRotateByPo2(tmp,l);
 			scheme.addAndEqual(tmp,rot);
 	        }
-                               
+                cout<<"print tmp after padding"<<endl;
+                printDecCiphtxt(tmp);
                 //cout<<"print tmp.logq before Product: "<<tmp.logq<<endl;
-		tmp2 = encHorizonVecProduct(encZData,tmp,poly,bBits,wBits,pBits);
+		tmp2 = encVerticalVecProduct(encZData,tmp,poly2,bBits,wBits,pBits);
                 //cout<<"print tmp2.logq: "<<tmp2.logq<<endl;
+                //printDecCiphtxt(tmp2);
 		scheme.multByPolyAndEqual(tmp2,poly2,pBits);
                 //cout<<"print tmp.logq: "<<tmp.logq<<endl;
 		tmp = scheme.rightRotate(tmp2,batch*i);
-		//cout<<"print tmp in GenEncAtA"<<endl;
-		//printDecCiphtxt(tmp2);
+		cout<<"print tmp in GenEncAtA"<<endl;
+		printDecCiphtxt(tmp);
                 //cout<<"print tmp.q after rotation: "<<tmp.logq<<endl;
                 
                 //scheme.modDownToAndEqual(AtA,tmp2.logq);
                 //cout<<"print AtA.q after modDown: "<<AtA.logq<<endl;
                 if(i==0){
                         AtA = tmp;
+                        cout<<"0 print"<<endl;
                 }else{
                         scheme.addAndEqual(AtA,tmp);
                 }
@@ -315,13 +322,13 @@ void CipherSVM::encLGDstep(Ciphertext& encWData, Ciphertext& encGrad, double lr,
 	
 	scheme.multByConstAndEqual(encGrad,lr,wBits);
 	cout<<"Print lr*grad"<<endl;
-	CipherSVM::printDecCiphtxt(encGrad);
+	//CipherSVM::printDecCiphtxt(encGrad);
 	scheme.reScaleByAndEqual(encGrad,wBits);
 	scheme.modDownToAndEqual(encWData, encGrad.logq);
 	//should multiply learning rate to gradient!
 	scheme.subAndEqual(encWData, encGrad);
 	cout<<"Print W-lr*grad"<<endl;
-	CipherSVM::printDecCiphtxt(encWData);
+	//CipherSVM::printDecCiphtxt(encWData);
 	//}
 	//NTL_EXEC_RANGE_END;
 }
