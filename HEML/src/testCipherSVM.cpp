@@ -170,6 +170,16 @@ int main(int argc, char **argv){
     cipherSVM.printDecCiphtxt(encZData);
     delete[] IMat;
     Ciphertext encAtA;
+    
+    //complex<double>* zeros = new complex<double>[slots];
+    //for(long i=0;i<slots;++i){
+    //        zeros[i].real(0.0);
+    //}
+
+    //encAtA = scheme.encrypt(zeros,slots,wBits,logQ);
+    //scheme.modDownToAndEqual(encAtA,370);
+    
+    //scheme.addAndEqual(encAtA,encAtA);
     encAtA = cipherSVM.GenEncAtA(encZData,poly,poly2,bBits,wBits,pBits,batch,slots,logQ);
     cout<<"print AtA"<<endl;
     cipherSVM.printDecCiphtxt(encAtA);

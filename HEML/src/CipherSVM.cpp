@@ -120,13 +120,15 @@ Ciphertext CipherSVM::GenAtA(Ciphertext encZData, ZZX& poly, ZZX& poly2, long bB
 }
 Ciphertext CipherSVM::GenEncAtA(Ciphertext encZData, ZZX& poly, ZZX& poly2, long bBits, long wBits, long pBits, long batch, long slots,long logQ){
 	Ciphertext AtA,tmp,tmp2;
-        double* zeros = new double[slots];
+        complex<double>* zeros = new complex<double>[slots];
         for(long i=0;i<slots;++i){
-            zeros[i] = 0;
+            zeros[i] =0;
         }
         AtA = scheme.encrypt(zeros,slots,wBits,logQ);
         cout<<"initial AtA"<<endl;
         printDecCiphtxt(AtA);
+        //printDecCiphtxt(scheme.add(AtA,AtA));
+        cout<<"print initial AtA.logq: "<<AtA.logq<<endl;
 
 	for(long i=0;i<batch;++i){
 		tmp2 = scheme.rightRotate(encZData,batch*i);
@@ -135,14 +137,21 @@ Ciphertext CipherSVM::GenEncAtA(Ciphertext encZData, ZZX& poly, ZZX& poly2, long
 			Ciphertext rot = scheme.leftRotateByPo2(tmp,l+bBits);
 			scheme.addAndEqual(tmp,rot);
 		}
+                //cout<<"print tmp.logq before Product: "<<tmp.logq<<endl;
 		tmp2 = encHorizonVecProduct(encZData,tmp,poly,bBits,wBits,pBits);
+                //cout<<"print tmp2.logq: "<<tmp2.logq<<endl;
 		tmp = scheme.multByPoly(tmp2,poly2,pBits);
+                //cout<<"print tmp.logq: "<<tmp.logq<<endl;
 		tmp = scheme.rightRotate(tmp,batch*i);
-		cout<<"print tmp in GenEncAtA"<<endl;
+		//cout<<"print tmp in GenEncAtA"<<endl;
 		printDecCiphtxt(tmp);
+                //cout<<"print tmp.q after rotation: "<<tmp.logq<<endl;
                 scheme.modDownToAndEqual(AtA,tmp.logq);
+                cout<<"print AtA.q after modDown: "<<AtA.logq<<endl;
+                
+                //printDecCiphtxt(AtA);
 		scheme.addAndEqual(AtA,tmp);
-		cout<<"print resulting AtA"<<endl;
+		cout<<"print resulting AtA: "<<endl;
                 printDecCiphtxt(AtA);
 	}
 	return AtA;
