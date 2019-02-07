@@ -180,6 +180,7 @@ int main(int argc, char **argv){
     //scheme.modDownToAndEqual(encAtA,370);
     
     //scheme.addAndEqual(encAtA,encAtA);
+    //encAtA = cipherSVM.GenAtA(encZData,poly,poly2,bBits,wBits,pBits,batch,slots);
     encAtA = cipherSVM.GenEncAtA(encZData,poly,poly2,bBits,wBits,pBits,batch,slots,logQ);
     cout<<"print AtA"<<endl;
     cipherSVM.printDecCiphtxt(encAtA);

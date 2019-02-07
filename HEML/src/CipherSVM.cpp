@@ -76,6 +76,8 @@ Ciphertext CipherSVM::GenAtA(Ciphertext encZData, ZZX& poly, ZZX& poly2, long bB
 			Ciphertext tmp = scheme.rightRotateByPo2(AtA, l+bBits);//parameter check
 			scheme.addAndEqual(AtA, tmp);
 		}
+                //cout<<"test mult Poly and addAndEqual"<<endl;
+                //printDecCiphtxt(scheme.add(AtA,encZData));
 
 		scheme.multAndEqual(AtA, encZData); // xy * w
 		for (long l = 0; l < bBits; ++l) {
@@ -120,6 +122,7 @@ Ciphertext CipherSVM::GenAtA(Ciphertext encZData, ZZX& poly, ZZX& poly2, long bB
 }
 Ciphertext CipherSVM::GenEncAtA(Ciphertext encZData, ZZX& poly, ZZX& poly2, long bBits, long wBits, long pBits, long batch, long slots,long logQ){
 	Ciphertext AtA,tmp,tmp2;
+        /*
         complex<double>* zeros = new complex<double>[slots];
         for(long i=0;i<slots;++i){
             zeros[i] =0;
@@ -128,29 +131,45 @@ Ciphertext CipherSVM::GenEncAtA(Ciphertext encZData, ZZX& poly, ZZX& poly2, long
         cout<<"initial AtA"<<endl;
         printDecCiphtxt(AtA);
         //printDecCiphtxt(scheme.add(AtA,AtA));
-        cout<<"print initial AtA.logq: "<<AtA.logq<<endl;
+        //
+        */
+        //cout<<"print initial AtA.logq: "<<AtA.logq<<endl;
 
 	for(long i=0;i<batch;++i){
-		tmp2 = scheme.rightRotate(encZData,batch*i);
-		tmp = scheme.multByPoly(tmp2,poly2,pBits);//[a1,a2,..,an,;0,0,0,...]
+		tmp = scheme.rightRotate(encZData,batch*i);
+		scheme.multByPolyAndEqual(tmp,poly2,pBits);//[a1,a2,..,an,;0,0,0,...]
+                /* 
+                cout<<"print tmp"<<endl;
+                printDecCiphtxt(tmp);
+                scheme.modDownToAndEqual(AtA,tmp.logq);
+                cout<<"print AtA after add: "<<AtA.logq<<endl;
+                scheme.addAndEqual(AtA,tmp);
+                printDecCiphtxt(AtA);
+                */
 		for(long l=0;l<bBits;++l){
 			Ciphertext rot = scheme.leftRotateByPo2(tmp,l+bBits);
 			scheme.addAndEqual(tmp,rot);
-		}
+	        }
+                               
                 //cout<<"print tmp.logq before Product: "<<tmp.logq<<endl;
 		tmp2 = encHorizonVecProduct(encZData,tmp,poly,bBits,wBits,pBits);
                 //cout<<"print tmp2.logq: "<<tmp2.logq<<endl;
-		tmp = scheme.multByPoly(tmp2,poly2,pBits);
+		scheme.multByPolyAndEqual(tmp2,poly2,pBits);
                 //cout<<"print tmp.logq: "<<tmp.logq<<endl;
-		tmp = scheme.rightRotate(tmp,batch*i);
+		tmp = scheme.rightRotate(tmp2,batch*i);
 		//cout<<"print tmp in GenEncAtA"<<endl;
-		printDecCiphtxt(tmp);
+		//printDecCiphtxt(tmp2);
                 //cout<<"print tmp.q after rotation: "<<tmp.logq<<endl;
-                scheme.modDownToAndEqual(AtA,tmp.logq);
-                cout<<"print AtA.q after modDown: "<<AtA.logq<<endl;
                 
+                //scheme.modDownToAndEqual(AtA,tmp2.logq);
+                //cout<<"print AtA.q after modDown: "<<AtA.logq<<endl;
+                if(i==0){
+                        AtA = tmp;
+                }else{
+                        scheme.addAndEqual(AtA,tmp);
+                }
                 //printDecCiphtxt(AtA);
-		scheme.addAndEqual(AtA,tmp);
+		//scheme.addAndEqual(AtA,tmp2);
 		cout<<"print resulting AtA: "<<endl;
                 printDecCiphtxt(AtA);
 	}
