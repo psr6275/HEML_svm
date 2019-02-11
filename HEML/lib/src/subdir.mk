@@ -6,18 +6,24 @@
 CPP_SRCS += \
 ../src/CipherGD.cpp \
 ../src/GD.cpp \
+../src/CipherSVM.cpp\
+../src/TrainSVM.cpp\
 ../src/HEML.cpp \
 ../src/TestGD.cpp 
 
 OBJS += \
 ./src/CipherGD.o \
 ./src/GD.o \
+./src/CipherSVM.o\
+./src/TrainSVM.o\
 ./src/HEML.o \
 ./src/TestGD.o 
 
 CPP_DEPS += \
 ./src/CipherGD.d \
 ./src/GD.d \
+./src/CipherSVM.d\
+./src/TrainSVM.d\
 ./src/HEML.d \
 ./src/TestGD.d 
 

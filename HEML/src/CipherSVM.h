@@ -24,19 +24,24 @@ public:
         ZZX generateAuxPoly(long slots, long batch, long pBits);
         //the first column is 1
         ZZX generateAuxPoly2(long slots, long batch, long pBits); 
+        //generate all 1 polynomial
+        ZZX generateAuxPolyOne(long slots, long batch, long pBits);
+        ZZX generateAuxPolyConst(double cnst, long slots, long pBits);
 
         //prepare the basic components
         Ciphertext GenAtA(Ciphertext encZData,  ZZX& poly, ZZX& poly2, long bBits, long wBits, long pBits, long batch, long slots);
         Ciphertext GenAbHorzon(Ciphertext encZData,  ZZX& poly, long bBits, long wBits, long pBits, long slots);
         Ciphertext GenAbVertical(Ciphertext encZData,  ZZX& poly, long bBits, long wBits, long pBits, long slots);
         Ciphertext GenEncAtA(Ciphertext encZData,ZZX& poly, ZZX& poly2, long bBits, long wBits, long pBits,long batch, long slots,long logQ);
+        
         //operations for GD step
         Ciphertext encHorizonVecProduct(Ciphertext encZData, Ciphertext encWData,  ZZX& poly, long bBits, long wBits, long pBits); 
         Ciphertext encVerticalVecProduct(Ciphertext encZData, Ciphertext encWData,  ZZX& poly,  long bBits, long wBits, long pBits); 
+        Ciphertext encVerticalVecProduct2(Ciphertext encZData, Ciphertext encWData,  ZZX& poly,  long bBits, long wBits, long pBits); 
 
         //for GD step and iteration
-        void encLGDstep(Ciphertext& encWData, Ciphertext& encGrad, double lr,long wBits); 
-        void encLGDiteration(Ciphertext& encAtAData,Ciphertext& encAbV, Ciphertext& encAbH, Ciphertext& encWData, ZZX& poly, ZZX& poly2, double gamma, long sBits, long bBits, long wBits, long pBits, long aBits);
+        void encLGDstep(Ciphertext& encWData, Ciphertext& encGrad, double lr,long pBits); 
+        void encLGDiteration(Ciphertext& encAtAData,Ciphertext& encAbV, Ciphertext& encAbH, Ciphertext& encWData, ZZX& poly, ZZX& poly2,ZZX& polyOne, double gamma, long sBits, long bBits, long wBits, long pBits, long aBits,long slots);
         //void decWData(double* wData, Ciphertext encWData, long wBits);
         void encMatrix(Ciphertext& encZData, double** zData, long dim, long slots, long bBits, long wBits, long logQ);
         void printDecCiphtxt(Ciphertext encData);

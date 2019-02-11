@@ -35,7 +35,7 @@ TrainSVM::TrainSVM(long dims, long numIters){
 	batch = 1 << bBits;    
 	long sBits = dimBits + bBits;
 
-	logQ = sBits*sBits+ (dimBits + wBits + lBits) + numIter * ((3 + 1) * wBits + 2 * 3 + aBits);
+	logQ = (sBits*sBits+ (dimBits + wBits + lBits) + numIter * ((3 + 1) * wBits + 2 * 3 + aBits))*3;
         long logN = TrainSVM::suggestLogN(80, logQ);
 	slots =  1 << sBits;
         cout << dim << "batch = " << batch << ", slots = " << slots  << endl;
@@ -79,6 +79,9 @@ void TrainSVM::trainEncLGD(double** zDataTrain, double lr){
         //wtData[i] = EvaluatorUtils::randomReal(1.0);
 		wtData[i] =0.0;
     }
+    wtData[0] = 0.0;
+    wtData[1] = 1.0;
+    wtData[2] = 1.0;
     double* wData = new double[slots];
     for(long j=0;j<slots;j++){
         wData[j] = wtData[j%batch];
@@ -95,7 +98,7 @@ void TrainSVM::trainEncLGD(double** zDataTrain, double lr){
 	timeutils.start("Polynomial generating...");
 	ZZX poly = cipherSVM->generateAuxPoly(slots, batch, pBits);  //masking matrix - 1st column만 1, 나머지 0 생성
 	ZZX poly2 = cipherSVM->generateAuxPoly2(slots, batch, pBits); //masking matrix - 1st row만 1, 나머지 0 생성
-
+        ZZX polyOne = cipherSVM->generateAuxPolyOne(slots, batch, pBits);
 	timeutils.stop("Polynomial generation");
 
 
@@ -133,7 +136,7 @@ void TrainSVM::trainEncLGD(double** zDataTrain, double lr){
         cout << " !!! START " << iter + 1 << " ITERATION !!! " << endl;
 		cout<<"encWData.logq before: "<< encWData.logq <<endl;
         timeutils.start("Enc LGD");
-        cipherSVM->encLGDiteration(AtA,AbV,AbH,encWData,poly,poly2,lr,sBits,bBits,wBits,pBits,aBits);
+        cipherSVM->encLGDiteration(AtA,AbV,AbH,encWData,poly,poly2,polyOne,lr,sBits,bBits,wBits,pBits,aBits,slots);
         
 		timeutils.stop("Enc LGD");
         cout << "encWData.logq after: " << encWData.logq << endl;
